@@ -7,7 +7,116 @@
     <link rel="stylesheet" href="css/output.css"/>
     <script scr="js/script.js" defer></script>
 </head>
-<body>
-    
+<body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-4">
+        <!-- Search and Sort Section -->
+        <div class="mb-8 flex flex-col sm:flex-row gap-4 items-center">
+            <div class="relative flex-1">
+                <input type="search" 
+                       placeholder="Search posts..." 
+                       required
+                       minlength="2"
+                       class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+            </div>
+            <select class="px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                <option value="recent">Most Recent</option>
+                <option value="popular">Most Popular</option>
+                <option value="comments">Most Commented</option>
+            </select>
+        </div>
+
+        <!-- Create Post Section -->
+        <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+            <h2 class="text-xl font-semibold mb-4">Create New Post</h2>
+            <form class="space-y-4" id="postForm">
+                <textarea 
+                    placeholder="What's on your mind?" 
+                    required
+                    minlength="1"
+                    maxlength="500"
+                    class="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500 min-h-[100px]"
+                ></textarea>
+                
+                <div class="flex flex-wrap gap-4">
+                    <label class="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <i class="fas fa-image text-gray-600"></i>
+                        <span>Add Image</span>
+                        <input type="file" 
+                               accept="image/*"
+                               class="hidden" />
+                    </label>
+                    <label class="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <i class="fas fa-video text-gray-600"></i>
+                        <span>Add Video</span>
+                        <input type="file" 
+                               accept="video/*"
+                               class="hidden" />
+                    </label>
+                    <button type="submit" 
+                            class="ml-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Post
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Feed Posts -->
+        <div class="space-y-6">
+            <!-- Post 1 -->
+            <article class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="/api/placeholder/40/40" alt="User Avatar" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 class="font-semibold">John Doe</h3>
+                        <time datetime="2024-11-17T10:00" class="text-sm text-gray-500">2 hours ago</time>
+                    </div>
+                </div>
+                <p class="mb-4">Just finished working on an amazing new project! Can't wait to share more details.</p>
+                <img src="/api/placeholder/600/400" alt="Project preview" class="w-full rounded-lg mb-4">
+                <div class="flex items-center gap-6 text-gray-500">
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-heart"></i>
+                        <span>24</span>
+                    </button>
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-comment"></i>
+                        <span>12</span>
+                    </button>
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Post 2 -->
+            <article class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="/api/placeholder/40/40" alt="User Avatar" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h3 class="font-semibold">Jane Smith</h3>
+                        <time datetime="2024-11-17T07:00" class="text-sm text-gray-500">5 hours ago</time>
+                    </div>
+                </div>
+                <p>Check out this amazing video from our latest company event!</p>
+                <div class="relative mt-4 bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
+                    <i class="fas fa-play-circle text-6xl text-gray-400"></i>
+                </div>
+                <div class="flex items-center gap-6 mt-4 text-gray-500">
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-heart"></i>
+                        <span>18</span>
+                    </button>
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-comment"></i>
+                        <span>8</span>
+                    </button>
+                    <button type="button" class="flex items-center gap-2 hover:text-blue-500">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            </article>
+        </div>
+    </div>
 </body>
 </html>
