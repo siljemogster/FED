@@ -21,7 +21,5 @@
   "devDependencies": {
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.15"
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true
+  }
 }
