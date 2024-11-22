@@ -1,13 +1,609 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed Page</title>
-    <link rel="stylesheet" href="css/output.css"/>
-    <script scr="js/script.js" defer></script>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feed Page | Loop</title>
+    <link rel="stylesheet" href="/css/output.css" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicons/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/favicons/site.webmanifest" />
+  </head>
+  <body>
+    <header>
+      <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16">
+            <div class="flex-shrink-0 flex items-center">
+              <a
+                href="/"
+                class="text-2xl font-bold tracking-tight text-purple-700 transition-colors"
+              >
+                Loop
+              </a>
+            </div>
+            <div class="hidden sm:flex sm:items-center sm:space-x-8">
+              <a
+                href="/profile"
+                class="text-gray-700 hover:text-purple-700 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Profile
+              </a>
+              <a href="/feed" class="text-purple-700 text-sm font-medium">
+                Feed
+              </a>
+              <a
+                href="/"
+                class="text-gray-700 hover:text-purple-700 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Sign Out
+              </a>
+            </div>
+            <div class="flex items-center sm:hidden">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-purple-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+                onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+              >
+                <span class="sr-only">Open main menu</span>
+                <svg
+                  class="block h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="hidden sm:hidden" id="mobile-menu">
+          <div class="pt-10 pb-6 space-y-3">
+            <a
+              href="/profile"
+              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+            >
+              Profile
+            </a>
+            <a
+              href="/feed"
+              class="text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+            >
+              Feed
+            </a>
+            <a
+              href="/"
+              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+            >
+              Sign Out
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="h-16 bg-gray-500"></div>
+      <h1
+        class="mt-16 text-center text-4xl font-bold tracking-tight text-purple-700"
+        >Stay in the Loop</h1
+      >
+      <p class="mt-1.5 mb-8 text-center tracking-tight text-gray-900"
+        >a community for creative thinkers</p
+      >
+      <div class="max-w-2xl mx-auto p-4 space-y-6">
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <h2 class="text-xl font-semibold mb-4">Create New Post</h2>
+          <form class="space-y-4" id="postForm">
+            <textarea
+              placeholder="What's on your mind?"
+              required
+              minlength="1"
+              maxlength="500"
+              class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 min-h-[100px]"
+            ></textarea>
+            <div class="flex flex-wrap gap-4">
+              <label
+                class="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
+              >
+                <i class="fas fa-image text-gray-600"></i>
+                <span>Add Image</span>
+                <input type="file" accept="image/*" class="hidden" />
+              </label>
+              <label
+                class="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
+              >
+                <i class="fas fa-video text-gray-600"></i>
+                <span>Add Video</span>
+                <input type="file" accept="video/*" class="hidden" />
+              </label>
+              <button
+                type="submit"
+                class="ml-auto px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600"
+              >
+                Post
+              </button>
+            </div>
+          </form>
+        </div>
+        <div
+          class="flex items-center gap-4 w-full bg-white p-4 rounded-lg shadow-sm"
+        >
+          <div class="relative flex-grow">
+            <input
+              type="search"
+              placeholder="Search posts..."
+              required
+              minlength="2"
+              class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 min-h-24"
+            />
+            <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+          </div>
+          <select
+            class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+          >
+            <option value="recent">Most Recent</option>
+            <option value="popular">Most Popular</option>
+            <option value="comments">Most Commented</option>
+          </select>
+        </div>
+        <div class="space-y-6">
+          <article class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731873763/samples/woman-on-a-football-field.jpg"
+                alt="User Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-semibold">Lauren Bennett</h3>
+                <time datetime="2024-11-17T10:00" class="text-sm text-gray-500"
+                  >3 minutes ago</time
+                >
+              </div>
+            </div>
+            <p class="mb-4"
+              >Designing is more than just creating something beautiful – it’s
+              about solving problems and telling a story. Just wrapped up a
+              minimalist dashboard design for a client, focusing on simplicity
+              and functionality. Key lesson: Less is more, but every element
+              must have a purpose. What’s your favorite design principle? Let’s
+              inspire each other!
+            </p>
+            <div class="flex items-center gap-6 text-gray-500">
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">24</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">12</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">8</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731873761/samples/smile.jpg"
+                alt="User Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-semibold">Oliver Blake</h3>
+                <time datetime="2024-11-17T07:00" class="text-sm text-gray-500"
+                  >42 minutes ago</time
+                >
+              </div>
+            </div>
+            <p class="mb-4"
+              >Excited to announce that our team just wrapped up an incredible
+              Q4 strategy session! 🚀 It’s amazing to see how collaboration and
+              innovation can lead to such impactful ideas. Grateful for this
+              talented group of individuals pushing boundaries every day.</p
+            >
+            <img
+              src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1731873755/samples/imagecon-group.jpg"
+              alt="Project preview"
+              class="w-full rounded-lg mb-4"
+            />
+            <div class="flex items-center gap-6 text-gray-500">
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">18</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">8</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-500 hover:fill-purple-500 group-focus:text-purple-500 group-focus:fill-purple-500"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">5</span>
+              </div>
+            </div>
+          </article>
+          <article class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731873754/samples/people/smiling-man.jpg"
+                alt="User Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-semibold">Caleb Harrington</h3>
+                <time datetime="2024-11-17T10:00" class="text-sm text-gray-500"
+                  >3 hours ago</time
+                >
+              </div>
+            </div>
+            <p class="mb-4"
+              >Woke up early to catch the sunrise, and it was absolutely worth
+              it. There’s something magical about starting the day with peace
+              and quiet before the world wakes up. Reminder to pause and
+              appreciate the little things in life. Happy Sunday and designing,
+              everyone!</p
+            >
+            <img
+              src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731939234/pexels-davidboca-2261500_vvkjnh.jpg"
+              alt="Project preview"
+              class="w-full rounded-lg mb-4"
+            />
+            <div class="flex items-center gap-6 text-gray-500">
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">247</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">32</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">5</span>
+              </div>
+            </div>
+          </article>
+          <article class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731873754/samples/people/kitchen-bar.jpg"
+                alt="User Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-semibold">Julian Hayes</h3>
+                <time datetime="2024-11-17T10:00" class="text-sm text-gray-500"
+                  >5 hours ago</time
+                >
+              </div>
+            </div>
+            <p class="mb-4"
+              >Just finished working on an amazing new project! Can't wait to
+              share more details.</p
+            >
+            <img
+              src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1731873763/cld-sample-3.jpg"
+              alt="Project preview"
+              class="w-full rounded-lg mb-4"
+            />
+
+            <div class="flex items-center gap-6 text-gray-500">
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">89</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">12</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">2</span>
+              </div>
+            </div>
+          </article>
+          <article class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="https://res.cloudinary.com/du8k9sthb/image/upload/w_1000,ar_1:1,c_fill,g_auto,e_art:hokusai/v1731873755/samples/people/bicycle.jpg"
+                alt="User Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-semibold">Nathaniel Cross</h3>
+                <time datetime="2024-11-17T07:00" class="text-sm text-gray-500"
+                  >8 hours ago</time
+                >
+              </div>
+            </div>
+            <p class="mb-4"
+              >Check out this amazing video from our latest company event!</p
+            >
+            <img
+              src="https://res.cloudinary.com/du8k9sthb/image/upload/v1732098037/video_business_event_v7x4ti.png"
+              alt="Project preview"
+              class="w-full rounded-lg mb-4"
+            />
+            <div class="flex items-center gap-6 text-gray-500">
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">379</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">46</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="group">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-gray-500 hover:text-purple-700 hover:fill-purple-700 group-focus:text-purple-700 group-focus:fill-purple-700"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+                <span class="text-gray-500">22</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="bg-gray-70 border-t border-gray-200 py-7 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col items-center space-y-4">
+            <div class="text-gray-400 text-sm">
+              <span class="font-medium">Loop</span> &copy; 2024
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>
