@@ -1,3 +1,5 @@
+import { register } from "../../api/auth/register.js";
+
 export function registerHandler() {
   console.log("registerHandler");
   const form = document.querySelector("#registerForm");
@@ -28,4 +30,5 @@ function submitForm(event) {
   }
 
   console.log(data);
+  register(data);
 }
