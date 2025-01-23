@@ -1,4 +1,5 @@
 import { register } from "../../api/auth/register.js";
+import { displayMessage } from "../../ui/common/displayMessage.js";
 
 export function registerHandler() {
   console.log("registerHandler");
@@ -9,7 +10,7 @@ export function registerHandler() {
   }
 }
 
-function submitForm(event) {
+async function submitForm(event) {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
@@ -29,6 +30,29 @@ function submitForm(event) {
     delete data.avatarUrl;
   }
 
+  const container = document.querySelector("#message");
+
   console.log(data);
-  register(data);
+
+  const fieldset = form.querySelector("fieldset");
+
+  try {
+    fieldset.disabled = true;
+    displayMessage(
+      "#message",
+      "success",
+      "Successfully registered. Please login."
+    );
+    document.querySelector("#message").innerHTML = displayMessage(
+      "#message",
+      "success",
+      "Succeccfully registered. Please login. "
+    );
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    displayMessage(container, "warning", error.message);
+  } finally {
+    fieldset.disabled = false;
+  }
 }
