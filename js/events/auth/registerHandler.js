@@ -20,7 +20,7 @@ async function submitForm(event) {
     delete data.bio;
   }
 
-  if (data.avatarUrl.treim() === "") {
+  if (data.avatarUrl.trim() === "") {
     delete data.avatarUrl;
   } else {
     data.avatar = {
