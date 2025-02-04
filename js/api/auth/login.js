@@ -1,16 +1,8 @@
 const loginForm = document.querySelector("#login-form");
 
-function addToLocalStorage(key, value) {
-  localStorage.setItem(key, value);
-}
-
-function getFromLocalStorage(key) {
-  return localStorage.getItem(key);
-}
-
 const BASE_API_URL = "https://v2.api.noroff.dev";
 const AUTH_REGISTER_URL = `${BASE_API_URL}/auth/login`;
-
+   
 async function loginUser(userDetails) {
   try {
     const fetchOptions = {
@@ -21,11 +13,9 @@ async function loginUser(userDetails) {
       },
     };
     const response = await fetch(AUTH_REGISTER_URL, fetchOptions);
-    const json = await response.JSON();
-    console.log(json.accessToken);
-
-    const acessToken = json.accessToken;
-    addToLocalStorage("accessToken", accessToken);
+    const json = await response.json();
+    const acessToken = json.data.accessToken;
+    addToLocalStorage('accessToken', accessToken);
 
     console.log(json);
   } catch (error) {
