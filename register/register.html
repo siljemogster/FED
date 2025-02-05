@@ -23,7 +23,7 @@
       href="/favicons/favicon-16x16.png"
     />
     <link rel="manifest" href="/favicons/site.webmanifest" />
-    <script src="/js/api/auth/register.js" type="module"></script>
+    <script src="/js/app.js" type="module"></script>
   </head>
   <body>
     <main
@@ -42,7 +42,10 @@
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
           Or
-          <button href="/" class="font-medium text-purple-700 hover:text-purple-600">
+          <button
+            href="/"
+            class="font-medium text-purple-700 hover:text-purple-600"
+          >
             Sign in here
           </button>
         </p>
@@ -67,12 +70,13 @@
                     id="name"
                     name="name"
                     aria-describedby="nameHelp"
-                    required autocomplete="name"
+                    required
+                    autocomplete="name"
                     pattern="[A-Za-z0-9_]+"
                     title="Only letters, numbers and underscores are allowed"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                     placeholder="Your name"
-                    value="jkjklklklklklklkl11"
+                    
                   />
                 </div>
               </div>
@@ -94,7 +98,7 @@
                     title="Please provide a noroff.no or stud.noroff.no email address"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3"
                     placeholder="yourname@stud.noroff.no"
-                    value="jkjklklklklklerklkl@stud.noroff.no"
+                    
                   />
                 </div>
               </div>
@@ -117,7 +121,7 @@
                     placeholder="Minimum 8 characters"
                     oninvalid="this.setCustomValidity('Password must be at least 8 characters')"
                     oninput="this.setCustomValidity('')"
-                    value="Test12345678"
+                    
                   />
                 </div>
               </div>

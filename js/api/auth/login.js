@@ -1,34 +1,23 @@
-const loginForm = document.querySelector("#login-form");
+import { BASE_URL } from "../../constants/api.js";
 
-const BASE_API_URL = "https://v2.api.noroff.dev";
-const AUTH_REGISTER_URL = `${BASE_API_URL}/auth/login`;
-   
-async function loginUser(userDetails) {
-  try {
-    const fetchOptions = {
-      method: "POST",
-      body: JSON.stringify(userDetails),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch(AUTH_REGISTER_URL, fetchOptions);
-    const json = await response.json();
-    const acessToken = json.data.accessToken;
-    addToLocalStorage('accessToken', accessToken);
+export async function login(user) {
+  const url = `${BASE_URL}auth/login`;
 
-    console.log(json);
-  } catch (error) {
-    console.log(error);
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  };
+
+  const response = await fetch(url, options);
+  const json = await response.json();
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error(json.errors?.[0]?.message || "Login failed");
   }
 
-  function onLoginFormSubmit(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const formFields = Object.fromEntries(formData);
-    loginUser(formFields);
-  }
-
-  loginForm.addEventListener("submit", onLoginFormSubmit);
+  return json;
 }

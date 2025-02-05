@@ -11,7 +11,7 @@ function router() {
       console.log("Home page");
       break;
     case "/register/":
-      console.log("Register page");
+      registerHandler();
       break;
   }
 }

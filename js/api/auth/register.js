@@ -1,31 +1,23 @@
-const registerForm = document.querySelector("#register-form");
+import { BASE_URL } from "../../constants/api.js";
 
-const BASE_API_URL = "https://v2.api.noroff.dev";
+export async function register(user) {
+  const url = `${BASE_URL}auth/register`;
 
-const AUTH_REGISTER_URL = `${BASE_API_URL}/auth/register`;
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  };
 
-async function registerUser(userDetails) {
-  try {
-    const fetchOptions = {
-      method: "POST",
-      body: JSON.stringify(userDetails),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch(AUTH_REGISTER_URL, fetchOptions);
-    console.log(response);
-  } catch (error) {
-    console.log(error);
+  const response = await fetch(url, options);
+  const json = await response.json();
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error(json.errors?.[0]?.message || "Registration failed");
   }
 
-  function onRegisterFormSubmit(event) {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    const formFields = Object.fromEntries(formData);
-    registerUser(formFields);
-  }
-
-  registerForm.addEventListener("submit", onRegisterFormSubmit);
+  return json;
 }
