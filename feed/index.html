@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feed Page | Loop</title>
     <link rel="stylesheet" href="/css/output.css" />
-    <script src="/js/app.js" type="module"></script>
+    <script src="/js/feed.js" type="module"></script>
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -123,6 +123,7 @@
             <h2 class="text-xl font-semibold mb-4">Create New Post</h2>
             <form class="space-y-4" id="postForm">
               <textarea
+                name="body"
                 placeholder="What's on your mind?"
                 required
                 minlength="1"
@@ -135,14 +136,24 @@
                 >
                   <i class="fas fa-image text-gray-600"></i>
                   <span>Add Image</span>
-                  <input type="file" accept="image/*" class="hidden" />
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    class="hidden"
+                  />
                 </label>
                 <label
                   class="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
                 >
                   <i class="fas fa-video text-gray-600"></i>
                   <span>Add Video</span>
-                  <input type="file" accept="video/*" class="hidden" />
+                  <input
+                    type="file"
+                    name="video"
+                    accept="video/*"
+                    class="hidden"
+                  />
                 </label>
                 <button
                   type="submit"
