@@ -21,5 +21,6 @@ async function submitForm(event) {
     console.log(response);
   } catch (error) {
     console.log(error); 
+    displayMessage("#message", "danger", error);
   }
 }
