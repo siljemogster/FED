@@ -9,6 +9,7 @@ function router() {
     case "/":
     case "/index.html":
       console.log("Home page");
+      loginHandler();
       break;
     case "/register/":
       registerHandler();
