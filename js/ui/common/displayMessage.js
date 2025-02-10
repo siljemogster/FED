@@ -4,6 +4,9 @@ export function displayMessage(container, messageType, message) {
   if (typeof container === "string") {
     parent = document.querySelector(container);
   }
-
-  parent.innerHTML = `<div class="p-4 rounded-lg text-white ${messageType === "success" ? "bg-green-500" : "bg-red-500"}" role="alert">${message}</div>`;
+  parent.innerHTML = `
+  <div class="text-red-500 font-semibold" role="alert">
+    ${message}
+  </div>
+`;
 }

@@ -30,6 +30,6 @@ async function submitForm(event) {
     location.href = "/feed";
   } catch (error) {
     console.log(error);
-    displayMessage("#message", "danger", error);
+    displayMessage("#message", "error", "Invalid email or password", error);
   }
 }
