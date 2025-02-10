@@ -1,7 +1,7 @@
 import { BASE_URL } from "../../constants/api.js";
 
 export async function register(user) {
-  const url = `${BASE_URL}auth/register`;
+  const url = `${BASE_URL}/auth/register`;
 
   const options = {
     method: "POST",
