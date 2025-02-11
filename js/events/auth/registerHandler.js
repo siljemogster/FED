@@ -1,31 +1,36 @@
+import { register } from "../../api/auth/register.js";
+import { saveToken, saveUsername } from "../../storage/utils.js";
+import { displayMessage } from "../../ui/common/displayMessage.js";
+
 export function registerHandler() {
-  console.log("registerHandler");
   const form = document.querySelector("#registerForm");
+
   if (form) {
     form.addEventListener("submit", submitForm);
   }
 }
 
-function submitForm(event) {
+async function submitForm(event) {
   event.preventDefault();
 
   const form = event.target;
   const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
+  const profile = Object.fromEntries(formData);
 
-  if (data.bio.trim() === "") {
-    delete data.bio;
+  console.log(profile);
+
+  try {
+    const response = await register(profile);
+
+    const { data } = response;
+    const { accessToken, name } = data;
+
+    saveToken(accessToken);
+    saveUsername(name);
+
+    location.href = "/feed";
+  } catch (error) {
+    console.log(error);
+    displayMessage("#message", "error", error);
   }
-
-  if (data.avatarUrl.trim() === "") {
-    delete data.avatarUrl;
-  } else {
-    data.avatar = {
-      url: data.avatarUrl,
-      alt: `${data.name}'s avatar`,
-    };
-    delete data.avatarUrl;
-  }
-
-  console.log(data);
 }
