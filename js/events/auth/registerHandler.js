@@ -15,9 +15,22 @@ async function submitForm(event) {
 
   const form = event.target;
   const formData = new FormData(form);
-  const profile = Object.fromEntries(formData);
+  const data = Object.fromEntries(formData);
 
-  console.log(profile);
+  if (data.bio.trim() === "") {
+    delete data.bio;
+  }
+
+  if (data.avatarUrl.trim() === "") {
+    delete data.avatarUrl;
+  } else {
+    data.avatar = {
+      url: data.avatarUrl,
+      alt: `${data.name}'s avatar`,
+    };
+    delete data.avatarUrl;
+  }
+  console.log(data);
 
   try {
     const response = await register(profile);
