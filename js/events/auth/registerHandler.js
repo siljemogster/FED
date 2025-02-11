@@ -15,7 +15,7 @@ async function submitForm(event) {
 
   const form = event.target;
   const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
+  const profile = Object.fromEntries(formData);
 
   if (data.bio.trim() === "") {
     delete data.bio;
@@ -30,7 +30,7 @@ async function submitForm(event) {
     };
     delete data.avatarUrl;
   }
-  console.log(data);
+  console.log(profile);
 
   try {
     const response = await register(profile);
