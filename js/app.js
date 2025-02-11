@@ -1,7 +1,6 @@
 import { loginHandler } from "./events/auth/loginHandler.js";
 import { registerHandler } from "./events/auth/registerHandler.js";
 
-
 function router() {
   const pathname = window.location.pathname;
 
@@ -20,4 +19,3 @@ function router() {
 }
 
 router();
-
