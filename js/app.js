@@ -1,5 +1,5 @@
-import { loginHandler } from "./events/auth/loginHandler.js";
-import { registerHandler } from "./events/auth/registerHandler.js";
+import { loginHandler } from "./handlers/auth/loginHandler.js";
+import { registerHandler } from "./handlers/auth/registerHandler.js";
 
 function router() {
   const pathname = window.location.pathname;
@@ -12,7 +12,9 @@ function router() {
       console.log("Home page");
       loginHandler();
       break;
+    case "/register":
     case "/register/":
+    case "/register/index.html":
       registerHandler();
       break;
   }

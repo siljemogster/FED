@@ -1,5 +1,5 @@
 import { login } from "../../api/auth/login.js";
-import { saveToken, saveUsername } from "../../storage/utils.js";
+import { saveToken, saveUsername } from "../../helpers/storage.js";
 import { displayMessage } from "../../ui/common/displayMessage.js";
 
 export function loginHandler() {
@@ -30,6 +30,6 @@ async function submitForm(event) {
     location.href = "/feed";
   } catch (error) {
     console.log(error);
-    displayMessage("#message", "error", "Invalid email or password", error);
+    displayMessage("#message", "error", error.message);
   }
 }
