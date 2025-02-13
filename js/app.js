@@ -13,6 +13,7 @@ function router() {
       loginHandler();
       break;
     case "/register/":
+    case "/register/index.html":
       registerHandler();
       break;
   }

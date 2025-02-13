@@ -17,31 +17,30 @@ async function submitForm(event) {
   const formData = new FormData(form);
   const profile = Object.fromEntries(formData);
 
-  if (data.bio.trim() === "") {
-    delete data.bio;
+  if (profile.bio.trim() === "") {
+    delete profile.bio;
   }
 
-  if (data.avatarUrl.trim() === "") {
-    delete data.avatarUrl;
+  if (profile.avatarUrl.trim() === "") {
+    delete profile.avatarUrl;
   } else {
-    data.avatar = {
-      url: data.avatarUrl,
-      alt: `${data.name}'s avatar`,
+    profile.avatar = {
+      url: profile.avatarUrl,
+      alt: `${profile.name}'s avatar`,
     };
-    delete data.avatarUrl;
+    delete profile.avatarUrl;
   }
   console.log(profile);
 
   try {
-    const response = await register(profile);
+    await register(profile);
+    form.reset();
 
-    const { data } = response;
-    const { accessToken, name } = data;
-
-    saveToken(accessToken);
-    saveUsername(name);
-
-    location.href = "/feed";
+    displayMessage(
+      "#message",
+      "success",
+      "You have registred an account. <a href='/'>Login</a> to continue."
+    );
   } catch (error) {
     console.log(error);
     displayMessage("#message", "error", error);
