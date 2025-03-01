@@ -3,38 +3,29 @@ import { createPost } from "../../api/posts/createPost.js";
 import { displayMessage } from "../../ui/common/displayMessage.js";
 import { isLoggedIn, getUsername } from "../../helpers/storage.js";
 
-/**
- * Initialize feed page handlers
- */
+
 export function feedHandler() {
   console.log("Feed handler initialized");
   
-  // Check if user is logged in
+ 
   if (!isLoggedIn()) {
-    // Redirect to login page if not logged in
     console.log("User not logged in, redirecting to login page");
     location.href = "/";
     return;
   }
 
-  // Set up the UI based on user data
+
   setupUserInterface();
-  
-  // Set up the post form handler if it exists
   setupPostForm();
-  
-  // Load and display posts
   loadPosts();
 }
 
-/**
- * Setup the user interface with user-specific data
- */
+
 function setupUserInterface() {
   const username = getUsername();
   console.log("Current user:", username);
   
-  // Set up user name in the UI if needed
+  
   const userNameElements = document.querySelectorAll(".user-name");
   if (username && userNameElements.length) {
     userNameElements.forEach(element => {
@@ -42,19 +33,16 @@ function setupUserInterface() {
     });
   }
   
-  // Set up the logout button functionality
+
   const logoutButtons = document.querySelectorAll("button[href='/']");
   logoutButtons.forEach(button => {
     button.addEventListener("click", handleLogout);
   });
-  
-  // Add title field to the post form
+
   addTitleFieldToPostForm();
 }
 
-/**
- * Add a title field to the post creation form
- */
+
 function addTitleFieldToPostForm() {
   const postForm = document.getElementById("postForm");
   if (!postForm) return;
@@ -62,7 +50,7 @@ function addTitleFieldToPostForm() {
   const textarea = postForm.querySelector("textarea");
   if (!textarea) return;
   
-  // Create title input field
+
   const titleInput = document.createElement("input");
   titleInput.type = "text";
   titleInput.name = "title";
@@ -70,13 +58,11 @@ function addTitleFieldToPostForm() {
   titleInput.className = "w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 mb-3";
   titleInput.maxLength = 100;
   
-  // Insert the title input before the textarea
+
   textarea.parentNode.insertBefore(titleInput, textarea);
 }
 
-/**
- * Set up the post form submission
- */
+
 function setupPostForm() {
   const postForm = document.getElementById("postForm");
   if (postForm) {
@@ -84,32 +70,30 @@ function setupPostForm() {
   }
 }
 
-/**
- * Handle post form submission
- */
+
 async function handlePostSubmit(event) {
   event.preventDefault();
   
   try {
-    // Get form elements
+   
     const form = event.target;
     const titleInput = form.querySelector('input[name="title"]');
     const bodyTextarea = form.querySelector('textarea');
     const submitButton = form.querySelector('button[type="submit"]');
     
-    // Validate input
+  
     if (!bodyTextarea || !bodyTextarea.value.trim()) {
       displayError("Please enter some content for your post");
       return;
     }
     
-    // Prepare post data
+    
     const postData = {
       title: titleInput && titleInput.value.trim() ? titleInput.value.trim() : "New Post",
       body: bodyTextarea.value.trim()
     };
     
-    // Show loading state
+
     const originalButtonText = submitButton.innerHTML;
     disableForm(form);
     submitButton.innerHTML = `
@@ -120,22 +104,22 @@ async function handlePostSubmit(event) {
       Posting...
     `;
     
-    // Call API to create post
+
     const newPost = await createPost(postData);
     console.log("Post created successfully:", newPost);
     
-    // Show success message
+
     displaySuccess("Your post has been published!");
     
-    // Reset form
+ 
     form.reset();
     
-    // Reload posts to show the new post
+ 
     loadPosts();
   } catch (error) {
     displayError(`Failed to publish post: ${error.message}`);
   } finally {
-    // Re-enable form
+   
     enableForm(event.target);
     const submitButton = event.target.querySelector('button[type="submit"]');
     if (submitButton) {
@@ -154,7 +138,7 @@ function displayError(message) {
   messageContainer.textContent = message;
   document.body.appendChild(messageContainer);
   
-  // Remove after 5 seconds
+
   setTimeout(() => {
     messageContainer.remove();
   }, 5000);
@@ -170,7 +154,7 @@ function displaySuccess(message) {
   messageContainer.textContent = message;
   document.body.appendChild(messageContainer);
   
-  // Remove after 5 seconds
+
   setTimeout(() => {
     messageContainer.remove();
   }, 5000);
@@ -192,18 +176,14 @@ function enableForm(form) {
   form.querySelectorAll("input, textarea, button").forEach(el => el.disabled = false);
 }
 
-/**
- * Handle user logout
- */
+
 function handleLogout() {
   console.log("Logging out...");
-  localStorage.clear(); // Clear all saved data
-  location.href = "/"; // Redirect to login page
+  localStorage.clear(); 
+  location.href = "/"; 
 }
 
-/**
- * Load and display posts
- */
+
 async function loadPosts() {
   const displayContainer = document.getElementById("display-container");
   
@@ -213,7 +193,7 @@ async function loadPosts() {
   }
   
   try {
-    // Show loading state
+
     displayContainer.innerHTML = `
       <div class="max-w-2xl mx-auto p-4">
         <div class="bg-white p-6 rounded-lg shadow-sm text-center">
@@ -222,15 +202,15 @@ async function loadPosts() {
       </div>
     `;
     
-    // Fetch posts from API
+ 
     console.log("Fetching posts...");
     const posts = await fetchPosts();
     console.log("Posts received:", posts);
     
-    // Clear loading message
+
     displayContainer.innerHTML = '';
     
-    // Display the posts
+    
     if (posts && posts.length > 0) {
       generatePosts(posts, displayContainer);
     } else {
@@ -265,29 +245,29 @@ async function loadPosts() {
 function generatePosts(posts, container) {
   console.log("Generating posts:", posts.length);
   
-  // Create wrapper to match your existing structure
+
   const wrapper = document.createElement("div");
   wrapper.className = "max-w-2xl mx-auto p-4 space-y-6";
   
   posts.forEach(post => {
-    // Create post article element
+
     const postElement = document.createElement("article");
     postElement.className = "bg-white p-6 rounded-lg shadow-sm";
     
-    // Create post author/header section
+    
     const headerDiv = document.createElement("div");
     headerDiv.className = "flex items-center gap-3 mb-4";
     
-    // Get author information
+  
     const authorName = post.author?.name || "Unknown User";
     const authorAvatar = post.author?.avatar?.url || null;
     
-    // Author avatar - use author's avatar if available, or generate one
+   
     const avatar = document.createElement("img");
     if (authorAvatar) {
       avatar.src = authorAvatar;
     } else {
-      // Use UI Avatars for a placeholder with the author's initials
+  
       avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=random&color=fff`;
     }
     avatar.alt = authorName;
@@ -297,7 +277,7 @@ function generatePosts(posts, container) {
       this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=random&color=fff`;
     };
     
-    // Author info
+  
     const authorInfo = document.createElement("div");
     
     const authorNameElement = document.createElement("h3");
@@ -315,7 +295,7 @@ function generatePosts(posts, container) {
     headerDiv.appendChild(avatar);
     headerDiv.appendChild(authorInfo);
     
-    // Post title if present
+   
     if (post.title) {
       const title = document.createElement("h2");
       title.className = "text-xl font-bold mb-2";
@@ -326,27 +306,27 @@ function generatePosts(posts, container) {
       postElement.appendChild(headerDiv);
     }
     
-    // Post body
+    
     const body = document.createElement("p");
     body.className = "mb-4";
     body.textContent = post.body || "";
     postElement.appendChild(body);
     
-    // Post media if present
+ 
     if (post.media) {
       if (post.media.url) {
-        // Determine media type from URL
+       
         const url = post.media.url.toLowerCase();
         const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg') || 
                       url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
         
         if (isVideo) {
-          // Create video element for video URLs
+    
           const videoContainer = document.createElement("div");
           videoContainer.className = "mb-4 relative pt-[56.25%]"; // 16:9 aspect ratio padding
           
           if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            // YouTube embed
+        
             const videoId = extractYouTubeId(url);
             if (videoId) {
               const iframe = document.createElement("iframe");
@@ -357,7 +337,7 @@ function generatePosts(posts, container) {
               postElement.appendChild(videoContainer);
             }
           } else if (url.includes('vimeo.com')) {
-            // Vimeo embed
+    
             const videoId = extractVimeoId(url);
             if (videoId) {
               const iframe = document.createElement("iframe");
@@ -368,7 +348,7 @@ function generatePosts(posts, container) {
               postElement.appendChild(videoContainer);
             }
           } else {
-            // Native video
+          
             const video = document.createElement("video");
             video.src = post.media.url;
             video.className = "w-full rounded-lg mb-4";
@@ -377,7 +357,7 @@ function generatePosts(posts, container) {
             postElement.appendChild(video);
           }
         } else {
-          // Create image element for image URLs
+     
           const image = document.createElement("img");
           image.src = post.media.url;
           image.alt = post.media.alt || post.title || "Post image";
@@ -391,11 +371,11 @@ function generatePosts(posts, container) {
       }
     }
     
-    // Create interaction div (likes, comments, shares)
+   
     const interactionDiv = document.createElement("div");
     interactionDiv.className = "flex items-center gap-6 text-gray-500";
     
-    // Like interaction
+  
     const likeCount = post._count?.reactions || 0;
     const likeDiv = document.createElement("div");
     likeDiv.className = "flex items-center space-x-1";
@@ -410,7 +390,7 @@ function generatePosts(posts, container) {
       <span class="text-gray-500">${likeCount}</span>
     `;
     
-    // Comment interaction
+
     const commentCount = post._count?.comments || 0;
     const commentDiv = document.createElement("div");
     commentDiv.className = "flex items-center space-x-1";
@@ -425,7 +405,7 @@ function generatePosts(posts, container) {
       <span class="text-gray-500">${commentCount}</span>
     `;
     
-    // Share interaction
+   
     const shareDiv = document.createElement("div");
     shareDiv.className = "flex items-center space-x-1";
     shareDiv.innerHTML = `
@@ -439,19 +419,19 @@ function generatePosts(posts, container) {
       <span class="text-gray-500">0</span>
     `;
     
-    // Add interactions to the div
+
     interactionDiv.appendChild(likeDiv);
     interactionDiv.appendChild(commentDiv);
     interactionDiv.appendChild(shareDiv);
     
-    // Add the interaction div to the post
+
     postElement.appendChild(interactionDiv);
     
-    // Add the completed post to the wrapper
+
     wrapper.appendChild(postElement);
   });
   
-  // Append wrapper to container
+ 
   container.appendChild(wrapper);
 }
 
