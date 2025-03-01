@@ -1,5 +1,5 @@
 const BASE_URL = "https://v2.api.noroff.dev/api/v1/social";
-import { getFromLocalStorage } from "./storage/utils.js";
+import { getFromLocalStorage } from "./helpers/storage.js";
 
 const displayContainer = document.getElementById("display-container");
 

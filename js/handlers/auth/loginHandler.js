@@ -1,6 +1,6 @@
 import { login } from "../../api/auth/login.js";
-import { saveToken, saveUsername } from "../../storage/utils.js";
-import { displayMessage } from "../../ui/common/displayMessage.js";
+import { saveToken, saveUsername } from "../../helpers/storage.js";
+import { displayMessage } from "../../ui/profile/displayMessage.js";
 
 export function loginHandler() {
   const form = document.querySelector("#loginForm");
