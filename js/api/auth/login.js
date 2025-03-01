@@ -1,22 +1,19 @@
-import { BASE_URL } from "../../constants/api.js";
+import { LOGIN_URL } from "../../constants/api.js";
 
-export async function login(user) {
-  const url = `${BASE_URL}/auth/login`;
-
+export async function login(profile) {
   const options = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(profile),
   };
 
-  const response = await fetch(url, options);
+  const response = await fetch(LOGIN_URL, options);
   const json = await response.json();
-  console.log(response);
 
   if (!response.ok) {
-    throw new Error(json.errors?.[0]?.message || "Login failed");
+    throw new Error(json.errors?.[0]?.message || "Failed to log in");
   }
 
   return json;
