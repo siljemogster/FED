@@ -1,56 +1,61 @@
-const displayContainer = document.getElementById('display-container');
+import { POSTS_URL, NOROFF_API_KEY } from "../../constants/api.js";
+import { getToken } from "../../helpers/storage.js";
 
-const BASE_API_URL = 'https://v2.api.noroff.dev';
-const POSTS_URL =`${BASE_API_URL}/social/posts`;
-
-const NOROFF_API_KEY = 'ee8b8f0e-808a-4289-8ff6-d067e204cc45';
-
-async function fetchPosts() {
+/**
+ * Fetch posts from the API
+ * @param {Object} options - Optional parameters
+ * @param {number} options.limit - Limit number of posts (default: 20)
+ * @param {number} options.offset - Offset for pagination
+ * @returns {Promise<Array>} Array of posts
+ */
+export async function fetchPosts(options = {}) {
   try {
-    const accessToken = getFromLocalStorage('accessToken');
-    console.log(accessToken); 
+    const accessToken = getToken();
+    
+    if (!accessToken) {
+      throw new Error("Authentication required. Please log in.");
+    }
+    
+    // Build URL with any query parameters
+    let url = POSTS_URL;
+    const queryParams = new URLSearchParams();
+    
+    if (options.limit) queryParams.append('limit', options.limit);
+    if (options.offset) queryParams.append('offset', options.offset);
+    if (options.sort) queryParams.append('sort', options.sort);
+    if (options.sortOrder) queryParams.append('sortOrder', options.sortOrder);
+    
+    if (queryParams.toString()) {
+      url = `${url}?${queryParams.toString()}`;
+    }
+    
+    // Set up fetch options
     const fetchOptions = {
+      method: "GET",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'X-Noroff-API-Key': NOROFF_API_KEY,
-      },
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": NOROFF_API_KEY
+      }
     };
-    const response = await fetch(POSTS_URL, fetchOptions);
+    
+    console.log("Fetching from URL:", url);
+    console.log("With options:", fetchOptions);
+    
+    // Make the API request
+    const response = await fetch(url, fetchOptions);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.errors?.[0]?.message || `API request failed with status ${response.status}`);
+    }
+    
     const json = await response.json();
+    console.log("API response:", json);
     return json.data;
-    console.log(response); 
-    console.log(json); 
+    
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching posts:", error);
+    throw error;
   }
 }
-
-function genereatePosts(posts) {
-  console.log(posts);
-  for (let i = 0; i < posts.length; i++) {
-    const postContainer = document.createElement('div');
-
-    const title = document.createElement('h2');
-    title.textContent = posts[i].title;
-
-
-
-    const body = document.createElement('p');
-    body.textContent = posts[i].body;
-
-    postContainer.append(title, body);
-    displayContainer.append(postContainer);
-
- 
-  }
-
-}
-
-async function main() {
-  const posts = await fetchPosts(); 
-  generatePosts(posts);
-  console.log(posts);
-}
-
-
-main(); 

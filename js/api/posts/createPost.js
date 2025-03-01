@@ -1,5 +1,5 @@
 import { POSTS_URL, NOROFF_API_KEY } from "../../constants/api.js";
-import { getAccessToken } from "../../helpers/storage.js";
+import { getToken } from "../../helpers/storage.js";
 
 /**
  * Create a new post
@@ -9,7 +9,7 @@ import { getAccessToken } from "../../helpers/storage.js";
  */
 export async function createPost(postData) {
   try {
-    const accessToken = getAccessToken();
+    const accessToken = getToken();
     
     if (!accessToken) {
       throw new Error("You must be logged in to create a post");
@@ -19,19 +19,21 @@ export async function createPost(postData) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        "Authorization": `Bearer ${accessToken}`,
         "X-Noroff-API-Key": NOROFF_API_KEY
       },
       body: JSON.stringify(postData)
     };
     
+    console.log("Creating post with data:", postData);
     const response = await fetch(POSTS_URL, options);
-    const json = await response.json();
     
     if (!response.ok) {
+      const json = await response.json().catch(() => ({}));
       throw new Error(json.errors?.[0]?.message || "Failed to create post");
     }
     
+    const json = await response.json();
     return json.data;
   } catch (error) {
     console.error("Error creating post:", error);
