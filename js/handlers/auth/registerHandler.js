@@ -1,6 +1,6 @@
 import { register } from "../../api/auth/register.js";
 import { saveToken, saveUsername } from "../../helpers/storage.js";
-import { displayMessage } from "../../ui/profile/displayMessage.js";
+import { displayMessage } from "../../ui/common/displayMessage.js";
 
 export function registerHandler() {
   const form = document.querySelector("#registerForm");

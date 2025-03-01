@@ -1,4 +1,4 @@
-import { displayMessage } from "../../ui/profile/displayMessage.js";
+import { displayMessage } from "../../ui/common/displayMessage.js";
 import { createPost } from "../../api/posts/createPost.js";
 
 export async function createPostHandler() {
