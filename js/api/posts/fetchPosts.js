@@ -11,48 +11,48 @@ import { getToken } from "../../helpers/storage.js";
 export async function fetchPosts(options = {}) {
   try {
     const accessToken = getToken();
-    
+
     if (!accessToken) {
       throw new Error("Authentication required. Please log in.");
     }
-    
-   
-    let url = POSTS_URL;
+
+    let url = `${POSTS_URL}?_author=true`;
     const queryParams = new URLSearchParams();
-    
-    if (options.limit) queryParams.append('limit', options.limit);
-    if (options.offset) queryParams.append('offset', options.offset);
-    if (options.sort) queryParams.append('sort', options.sort);
-    if (options.sortOrder) queryParams.append('sortOrder', options.sortOrder);
-    
+
+    if (options.limit) queryParams.append("limit", options.limit);
+    if (options.offset) queryParams.append("offset", options.offset);
+    if (options.sort) queryParams.append("sort", options.sort);
+    if (options.sortOrder) queryParams.append("sortOrder", options.sortOrder);
+
     if (queryParams.toString()) {
       url = `${url}?${queryParams.toString()}`;
     }
-    
-   
+
     const fetchOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-        "X-Noroff-API-Key": NOROFF_API_KEY
-      }
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": NOROFF_API_KEY,
+      },
     };
-    
+
     console.log("Fetching from URL:", url);
     console.log("With options:", fetchOptions);
-   
+
     const response = await fetch(url, fetchOptions);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.errors?.[0]?.message || `API request failed with status ${response.status}`);
+      throw new Error(
+        errorData.errors?.[0]?.message ||
+          `API request failed with status ${response.status}`
+      );
     }
-    
+
     const json = await response.json();
     console.log("API response:", json);
     return json.data;
-    
   } catch (error) {
     console.error("Error fetching posts:", error);
     throw error;

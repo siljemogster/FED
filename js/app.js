@@ -1,6 +1,9 @@
 import { loginHandler } from "./handlers/auth/loginHandler.js";
 import { registerHandler } from "./handlers/auth/registerHandler.js";
+import { editPostHandler } from "./handlers/posts/editPostHandler.js";
 import { feedHandler } from "./handlers/posts/feedHandler.js";
+import searchPostHandler from "./handlers/posts/searchPostHandler.js";
+import singlePostHandler from "./handlers/posts/singlePostHandler.js";
 import { isLoggedIn } from "./helpers/storage.js";
 
 /**
@@ -11,7 +14,13 @@ function router() {
   console.log("Current path:", pathname);
 
   // Authentication check for protected routes
-  if ((pathname === "/feed/" || pathname === "/feed/index.html" || pathname === "/profile/" || pathname === "/profile/index.html") && !isLoggedIn()) {
+  if (
+    (pathname === "/feed/" ||
+      pathname === "/feed/index.html" ||
+      pathname === "/profile/" ||
+      pathname === "/profile/index.html") &&
+    !isLoggedIn()
+  ) {
     console.log("Protected route, redirecting to login");
     location.href = "/";
     return;
@@ -24,25 +33,34 @@ function router() {
       console.log("Home/Login page");
       loginHandler();
       break;
-      
+
     case "/register/":
     case "/register/index.html":
       console.log("Register page");
       registerHandler();
       break;
-      
+
     case "/feed/":
     case "/feed/index.html":
       console.log("Feed page");
       feedHandler();
+      searchPostHandler();
       break;
-      
+
+    case "/feed/post.html":
+      singlePostHandler();
+      break;
+
+    case "/feed/edit.html":
+      editPostHandler();
+      break;
+
     case "/profile/":
     case "/profile/index.html":
       console.log("Profile page");
       // profileHandler(); // Implement this if needed
       break;
-      
+
     default:
       console.log("No specific handler for this route");
   }
@@ -57,16 +75,18 @@ function router() {
 function setupNavigation() {
   // Handle logout buttons
   const logoutButtons = document.querySelectorAll("button[href='/']");
-  logoutButtons.forEach(button => {
+  logoutButtons.forEach((button) => {
     button.addEventListener("click", () => {
       console.log("Logging out");
       localStorage.clear();
       location.href = "/";
     });
   });
-  
+
   // Mobile menu toggle
-  const mobileMenuButton = document.querySelector("button[aria-controls='mobile-menu']");
+  const mobileMenuButton = document.querySelector(
+    "button[aria-controls='mobile-menu']"
+  );
   if (mobileMenuButton) {
     mobileMenuButton.addEventListener("click", () => {
       const mobileMenu = document.getElementById("mobile-menu");

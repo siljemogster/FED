@@ -1,67 +1,61 @@
 import { fetchPosts } from "../../api/posts/fetchPosts.js";
 import { createPost } from "../../api/posts/createPost.js";
+import { deletePost } from "../../api/posts/deletePost.js";
 import { displayMessage } from "../../ui/common/displayMessage.js";
 import { isLoggedIn, getUsername } from "../../helpers/storage.js";
-
+import { postBelongsToUser } from "../../helpers/auth.js";
+import filterPostHandler from "./filterPostHandler.js";
 
 export function feedHandler() {
   console.log("Feed handler initialized");
-  
- 
+
   if (!isLoggedIn()) {
     console.log("User not logged in, redirecting to login page");
     location.href = "/";
     return;
   }
 
-
   setupUserInterface();
   setupPostForm();
   loadPosts();
 }
 
-
 function setupUserInterface() {
   const username = getUsername();
   console.log("Current user:", username);
-  
-  
+
   const userNameElements = document.querySelectorAll(".user-name");
   if (username && userNameElements.length) {
-    userNameElements.forEach(element => {
+    userNameElements.forEach((element) => {
       element.textContent = username;
     });
   }
-  
 
   const logoutButtons = document.querySelectorAll("button[href='/']");
-  logoutButtons.forEach(button => {
+  logoutButtons.forEach((button) => {
     button.addEventListener("click", handleLogout);
   });
 
-  addTitleFieldToPostForm();
+  // addTitleFieldToPostForm();
 }
-
 
 function addTitleFieldToPostForm() {
   const postForm = document.getElementById("postForm");
   if (!postForm) return;
-  
+
   const textarea = postForm.querySelector("textarea");
   if (!textarea) return;
-  
 
   const titleInput = document.createElement("input");
   titleInput.type = "text";
   titleInput.name = "title";
   titleInput.placeholder = "Add a title to your post";
-  titleInput.className = "w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 mb-3";
+  titleInput.className =
+    "w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 mb-3";
   titleInput.maxLength = 100;
-  
 
   textarea.parentNode.insertBefore(titleInput, textarea);
 }
-
 
 function setupPostForm() {
   const postForm = document.getElementById("postForm");
@@ -70,56 +64,52 @@ function setupPostForm() {
   }
 }
 
-
 async function handlePostSubmit(event) {
   event.preventDefault();
-  
-  try {
-   
-    const form = event.target;
-    const titleInput = form.querySelector('input[name="title"]');
-    const bodyTextarea = form.querySelector('textarea');
-    const submitButton = form.querySelector('button[type="submit"]');
-    
-  
-    if (!bodyTextarea || !bodyTextarea.value.trim()) {
-      displayError("Please enter some content for your post");
-      return;
-    }
-    
-    
-    const postData = {
-      title: titleInput && titleInput.value.trim() ? titleInput.value.trim() : "New Post",
-      body: bodyTextarea.value.trim()
-    };
-    
 
-    const originalButtonText = submitButton.innerHTML;
+  try {
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    const { title, body, mediaUrl, mediaAlt } = data;
+
+    const postData = {
+      title: title,
+      body: body,
+    };
+
+    if (mediaUrl.trim() !== "") {
+      postData.media = {
+        url: mediaUrl,
+        alt: mediaAlt,
+      };
+    }
+
+    console.log();
+
     disableForm(form);
-    submitButton.innerHTML = `
-      <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Posting...
-    `;
-    
+    // submitButton.innerHTML = `
+    //   <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    //     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    //     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    //   </svg>
+    //   Posting...
+    // `;
 
     const newPost = await createPost(postData);
     console.log("Post created successfully:", newPost);
-    
 
     displaySuccess("Your post has been published!");
-    
- 
+
     form.reset();
-    
- 
+
     loadPosts();
   } catch (error) {
+    console.log(error);
+
     displayError(`Failed to publish post: ${error.message}`);
   } finally {
-   
     enableForm(event.target);
     const submitButton = event.target.querySelector('button[type="submit"]');
     if (submitButton) {
@@ -134,10 +124,10 @@ async function handlePostSubmit(event) {
  */
 function displayError(message) {
   const messageContainer = document.createElement("div");
-  messageContainer.className = "fixed top-5 right-5 bg-red-100 text-red-700 p-4 rounded-lg shadow-lg z-50 max-w-md";
+  messageContainer.className =
+    "fixed top-5 right-5 bg-red-100 text-red-700 p-4 rounded-lg shadow-lg z-50 max-w-md";
   messageContainer.textContent = message;
   document.body.appendChild(messageContainer);
-  
 
   setTimeout(() => {
     messageContainer.remove();
@@ -150,10 +140,10 @@ function displayError(message) {
  */
 function displaySuccess(message) {
   const messageContainer = document.createElement("div");
-  messageContainer.className = "fixed top-5 right-5 bg-green-100 text-green-700 p-4 rounded-lg shadow-lg z-50 max-w-md";
+  messageContainer.className =
+    "fixed top-5 right-5 bg-green-100 text-green-700 p-4 rounded-lg shadow-lg z-50 max-w-md";
   messageContainer.textContent = message;
   document.body.appendChild(messageContainer);
-  
 
   setTimeout(() => {
     messageContainer.remove();
@@ -165,7 +155,9 @@ function displaySuccess(message) {
  * @param {HTMLFormElement} form - Form to disable
  */
 function disableForm(form) {
-  form.querySelectorAll("input, textarea, button").forEach(el => el.disabled = true);
+  form
+    .querySelectorAll("input, textarea, button")
+    .forEach((el) => (el.disabled = true));
 }
 
 /**
@@ -173,27 +165,26 @@ function disableForm(form) {
  * @param {HTMLFormElement} form - Form to enable
  */
 function enableForm(form) {
-  form.querySelectorAll("input, textarea, button").forEach(el => el.disabled = false);
+  form
+    .querySelectorAll("input, textarea, button")
+    .forEach((el) => (el.disabled = false));
 }
-
 
 function handleLogout() {
   console.log("Logging out...");
-  localStorage.clear(); 
-  location.href = "/"; 
+  localStorage.clear();
+  location.href = "/";
 }
-
 
 async function loadPosts() {
   const displayContainer = document.getElementById("display-container");
-  
+
   if (!displayContainer) {
     console.error("Display container not found");
     return;
   }
-  
-  try {
 
+  try {
     displayContainer.innerHTML = `
       <div class="max-w-2xl mx-auto p-4">
         <div class="bg-white p-6 rounded-lg shadow-sm text-center">
@@ -201,18 +192,16 @@ async function loadPosts() {
         </div>
       </div>
     `;
-    
- 
+
     console.log("Fetching posts...");
     const posts = await fetchPosts();
     console.log("Posts received:", posts);
-    
 
-    displayContainer.innerHTML = '';
-    
-    
+    displayContainer.innerHTML = "";
+
     if (posts && posts.length > 0) {
       generatePosts(posts, displayContainer);
+      filterPostHandler(posts, displayContainer);
     } else {
       displayContainer.innerHTML = `
         <div class="max-w-2xl mx-auto p-4">
@@ -242,60 +231,54 @@ async function loadPosts() {
  * @param {Array} posts - Array of post objects
  * @param {HTMLElement} container - Container element to append posts to
  */
-function generatePosts(posts, container) {
-  console.log("Generating posts:", posts.length);
-  
+export function generatePosts(posts, container) {
+  console.log("Generating posts:", posts);
+  container.innerHTML = "";
 
   const wrapper = document.createElement("div");
   wrapper.className = "max-w-2xl mx-auto p-4 space-y-6";
-  
-  posts.forEach(post => {
 
-    const postElement = document.createElement("article");
-    postElement.className = "bg-white p-6 rounded-lg shadow-sm";
-    
-    
+  posts.forEach((post) => {
+    const postElement = document.createElement("a");
+    postElement.className = "bg-white p-6 rounded-lg shadow-sm block";
+    postElement.href = `/feed/post.html?id=${post.id}`;
+
     const headerDiv = document.createElement("div");
     headerDiv.className = "flex items-center gap-3 mb-4";
-    
-  
+
     const authorName = post.author?.name || "Unknown User";
     const authorAvatar = post.author?.avatar?.url || null;
-    
-   
+
     const avatar = document.createElement("img");
     if (authorAvatar) {
       avatar.src = authorAvatar;
     } else {
-  
       avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=random&color=fff`;
     }
     avatar.alt = authorName;
     avatar.className = "w-10 h-10 rounded-full object-cover";
-    avatar.onerror = function() {
+    avatar.onerror = function () {
       this.onerror = null;
       this.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=random&color=fff`;
     };
-    
-  
+
     const authorInfo = document.createElement("div");
-    
+
     const authorNameElement = document.createElement("h3");
     authorNameElement.className = "font-semibold";
     authorNameElement.textContent = authorName;
-    
+
     const timestamp = document.createElement("time");
     timestamp.className = "text-sm text-gray-500";
     timestamp.dateTime = post.created || new Date().toISOString();
     timestamp.textContent = formatDate(post.created);
-    
+
     authorInfo.appendChild(authorNameElement);
     authorInfo.appendChild(timestamp);
-    
+
     headerDiv.appendChild(avatar);
     headerDiv.appendChild(authorInfo);
-    
-   
+
     if (post.title) {
       const title = document.createElement("h2");
       title.className = "text-xl font-bold mb-2";
@@ -305,77 +288,74 @@ function generatePosts(posts, container) {
     } else {
       postElement.appendChild(headerDiv);
     }
-    
-    
+
     const body = document.createElement("p");
     body.className = "mb-4";
     body.textContent = post.body || "";
     postElement.appendChild(body);
-    
- 
+
     if (post.media) {
       if (post.media.url) {
-       
         const url = post.media.url.toLowerCase();
-        const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg') || 
-                      url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
-        
+        const isVideo =
+          url.endsWith(".mp4") ||
+          url.endsWith(".webm") ||
+          url.endsWith(".ogg") ||
+          url.includes("youtube.com") ||
+          url.includes("youtu.be") ||
+          url.includes("vimeo.com");
+
         if (isVideo) {
-    
           const videoContainer = document.createElement("div");
           videoContainer.className = "mb-4 relative pt-[56.25%]"; // 16:9 aspect ratio padding
-          
-          if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        
+
+          if (url.includes("youtube.com") || url.includes("youtu.be")) {
             const videoId = extractYouTubeId(url);
             if (videoId) {
               const iframe = document.createElement("iframe");
               iframe.src = `https://www.youtube.com/embed/${videoId}`;
-              iframe.className = "absolute top-0 left-0 w-full h-full rounded-lg";
+              iframe.className =
+                "absolute top-0 left-0 w-full h-full rounded-lg";
               iframe.allowFullscreen = true;
               videoContainer.appendChild(iframe);
               postElement.appendChild(videoContainer);
             }
-          } else if (url.includes('vimeo.com')) {
-    
+          } else if (url.includes("vimeo.com")) {
             const videoId = extractVimeoId(url);
             if (videoId) {
               const iframe = document.createElement("iframe");
               iframe.src = `https://player.vimeo.com/video/${videoId}`;
-              iframe.className = "absolute top-0 left-0 w-full h-full rounded-lg";
+              iframe.className =
+                "absolute top-0 left-0 w-full h-full rounded-lg";
               iframe.allowFullscreen = true;
               videoContainer.appendChild(iframe);
               postElement.appendChild(videoContainer);
             }
           } else {
-          
             const video = document.createElement("video");
             video.src = post.media.url;
             video.className = "w-full rounded-lg mb-4";
             video.controls = true;
-            video.poster = post.media.poster || '';
+            video.poster = post.media.poster || "";
             postElement.appendChild(video);
           }
         } else {
-     
           const image = document.createElement("img");
           image.src = post.media.url;
           image.alt = post.media.alt || post.title || "Post image";
           image.className = "w-full rounded-lg mb-4";
-          image.onerror = function() {
+          image.onerror = function () {
             this.onerror = null;
-            this.src = 'https://placehold.co/600x400?text=Image+Not+Available';
+            this.src = "https://placehold.co/600x400?text=Image+Not+Available";
           };
           postElement.appendChild(image);
         }
       }
     }
-    
-   
+
     const interactionDiv = document.createElement("div");
     interactionDiv.className = "flex items-center gap-6 text-gray-500";
-    
-  
+
     const likeCount = post._count?.reactions || 0;
     const likeDiv = document.createElement("div");
     likeDiv.className = "flex items-center space-x-1";
@@ -389,7 +369,6 @@ function generatePosts(posts, container) {
       </button>
       <span class="text-gray-500">${likeCount}</span>
     `;
-    
 
     const commentCount = post._count?.comments || 0;
     const commentDiv = document.createElement("div");
@@ -404,8 +383,7 @@ function generatePosts(posts, container) {
       </button>
       <span class="text-gray-500">${commentCount}</span>
     `;
-    
-   
+
     const shareDiv = document.createElement("div");
     shareDiv.className = "flex items-center space-x-1";
     shareDiv.innerHTML = `
@@ -418,20 +396,42 @@ function generatePosts(posts, container) {
       </button>
       <span class="text-gray-500">0</span>
     `;
-    
 
     interactionDiv.appendChild(likeDiv);
     interactionDiv.appendChild(commentDiv);
     interactionDiv.appendChild(shareDiv);
-    
 
     postElement.appendChild(interactionDiv);
-    
+
+    const showAdmin = postBelongsToUser(post.author?.name);
+    if (showAdmin) {
+      const editLink = document.createElement("a");
+      editLink.href = `/feed/edit.html?id=${post.id}`;
+      editLink.textContent = "Edit";
+      editLink.className = "text-blue-500 hover:underline";
+      postElement.appendChild(editLink);
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.className = "text-red-500 hover:underline";
+      deleteButton.onclick = async function (event) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to delete this post?")) {
+          try {
+            await deletePost(post.id);
+            loadPosts();
+          } catch (error) {
+            console.error("Error deleting post:", error);
+            displayError(`Failed to delete post: ${error.message}`);
+          }
+        }
+      };
+      postElement.appendChild(deleteButton);
+    }
 
     wrapper.appendChild(postElement);
   });
-  
- 
+
   container.appendChild(wrapper);
 }
 
@@ -443,7 +443,7 @@ function generatePosts(posts, container) {
 function extractYouTubeId(url) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : null;
+  return match && match[2].length === 11 ? match[2] : null;
 }
 
 /**
@@ -452,7 +452,8 @@ function extractYouTubeId(url) {
  * @returns {string|null} - Vimeo video ID or null if not valid
  */
 function extractVimeoId(url) {
-  const regExp = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
+  const regExp =
+    /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
   const match = url.match(regExp);
   return match ? match[3] : null;
 }
@@ -464,7 +465,7 @@ function extractVimeoId(url) {
  */
 function formatDate(dateString) {
   if (!dateString) return "Just now";
-  
+
   const date = new Date(dateString);
   const now = new Date();
   const diffMs = now - date;
@@ -472,15 +473,15 @@ function formatDate(dateString) {
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
-  
+
   if (diffSec < 60) {
     return "Just now";
   } else if (diffMin < 60) {
-    return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+    return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
   } else if (diffHour < 24) {
-    return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`;
+    return `${diffHour} hour${diffHour > 1 ? "s" : ""} ago`;
   } else if (diffDay < 7) {
-    return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+    return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
   } else {
     return date.toLocaleDateString();
   }
