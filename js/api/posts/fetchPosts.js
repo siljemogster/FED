@@ -16,7 +16,7 @@ export async function fetchPosts(options = {}) {
       throw new Error("Authentication required. Please log in.");
     }
     
-    // Build URL with any query parameters
+   
     let url = POSTS_URL;
     const queryParams = new URLSearchParams();
     
@@ -29,7 +29,7 @@ export async function fetchPosts(options = {}) {
       url = `${url}?${queryParams.toString()}`;
     }
     
-    // Set up fetch options
+   
     const fetchOptions = {
       method: "GET",
       headers: {
@@ -41,8 +41,7 @@ export async function fetchPosts(options = {}) {
     
     console.log("Fetching from URL:", url);
     console.log("With options:", fetchOptions);
-    
-    // Make the API request
+   
     const response = await fetch(url, fetchOptions);
     
     if (!response.ok) {

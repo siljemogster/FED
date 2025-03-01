@@ -1,6 +1,4 @@
-/**
- * API function to fetch a user profile
- */
+
 
 import { BASE_URL, NOROFF_API_KEY } from "../../constants/api.js";
 import { getToken } from "../../helpers/storage.js";

@@ -1,6 +1,4 @@
-/**
- * Storage helper functions for authentication
- */
+
 
 const TOKEN = "accessToken";
 const USERNAME = "username";

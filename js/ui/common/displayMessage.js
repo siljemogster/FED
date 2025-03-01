@@ -7,18 +7,18 @@
 export function displayMessage(container, messageType, message) {
   let parent = container;
 
-  // If container is a selector string, query the DOM for the element
+
   if (typeof container === "string") {
     parent = document.querySelector(container);
   }
   
-  // Return if container element doesn't exist
+
   if (!parent) {
     console.error(`Container ${container} not found`);
     return;
   }
 
-  // Determine appropriate CSS classes based on message type
+
   let cssClass = "font-semibold p-4 rounded-lg my-3";
   
   switch (messageType) {
@@ -38,7 +38,7 @@ export function displayMessage(container, messageType, message) {
       cssClass += " text-gray-700";
   }
 
-  // Set the innerHTML of the container
+
   parent.innerHTML = `
     <div class="${cssClass}" role="alert">
       ${message}

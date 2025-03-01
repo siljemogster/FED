@@ -14,7 +14,7 @@ async function submitForm(event) {
   const formData = new FormData(form);
   const data = Object.fromEntries(formData);
   
-  // Get textarea for post body
+  
   const body = data.body;
   
   if (!body || body.trim() === '') {
@@ -23,7 +23,7 @@ async function submitForm(event) {
   }
   
   const postData = {
-    title: body.substring(0, 30) + "...", // Generate a title from body
+    title: body.substring(0, 30) + "...", 
     body: body
   };
   
@@ -31,7 +31,7 @@ async function submitForm(event) {
     const submitButton = form.querySelector("button[type='submit']");
     const originalButtonText = submitButton.innerHTML;
     
-    // Disable the form and show loading state
+
     form.querySelectorAll("input, textarea, button").forEach(el => el.disabled = true);
     submitButton.innerHTML = `
       <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -43,13 +43,13 @@ async function submitForm(event) {
     
     const response = await createPost(postData);
     
-    // Show success message
+
     displayMessage("#messageContainer", "success", "Post published successfully!");
     
-    // Reset form
+
     form.reset();
     
-    // Reload the feed to show the new post
+ 
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -57,7 +57,7 @@ async function submitForm(event) {
   } catch (error) {
     displayMessage("#messageContainer", "error", error.message);
   } finally {
-    // Re-enable the form
+ 
     form.querySelectorAll("input, textarea, button").forEach(el => el.disabled = false);
     const submitButton = form.querySelector("button[type='submit']");
     submitButton.innerHTML = "Post";
