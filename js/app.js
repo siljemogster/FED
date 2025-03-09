@@ -5,6 +5,8 @@ import { feedHandler } from "./handlers/posts/feedHandler.js";
 import searchPostHandler from "./handlers/posts/searchPostHandler.js";
 import singlePostHandler from "./handlers/posts/singlePostHandler.js";
 import { isLoggedIn } from "./helpers/storage.js";
+import { initSorting } from "./handlers/posts/sortingPostsHandler.js";
+
 
 /**
  * Application router - directs to appropriate handler based on current page
@@ -45,6 +47,7 @@ function router() {
       console.log("Feed page");
       feedHandler();
       searchPostHandler();
+      initSorting();
       break;
 
     case "/feed/post.html":

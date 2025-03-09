@@ -201,7 +201,14 @@ async function loadPosts() {
 
     if (posts && posts.length > 0) {
       generatePosts(posts, displayContainer);
-      filterPostHandler(posts, displayContainer);
+      
+      // Add try-catch around filterPostHandler to prevent it from breaking the page
+      try {
+        filterPostHandler(posts, displayContainer);
+      } catch (filterError) {
+        console.warn("Filter post handler error:", filterError);
+        // Continue even if filter handler fails
+      }
     } else {
       displayContainer.innerHTML = `
         <div class="max-w-2xl mx-auto p-4">
@@ -242,6 +249,9 @@ export function generatePosts(posts, container) {
     const postElement = document.createElement("a");
     postElement.className = "bg-white p-6 rounded-lg shadow-sm block";
     postElement.href = `/feed/post.html?id=${post.id}`;
+    
+    // Add timestamp data attribute for sorting
+    postElement.dataset.timestamp = post.created;
 
     const headerDiv = document.createElement("div");
     headerDiv.className = "flex items-center gap-3 mb-4";
@@ -403,19 +413,48 @@ export function generatePosts(posts, container) {
 
     postElement.appendChild(interactionDiv);
 
+    // Admin buttons section - only show for posts that belong to the current user
+    // Use the existing postBelongsToUser function to check ownership
     const showAdmin = postBelongsToUser(post.author?.name);
+    console.log("Post author:", post.author?.name, "Show admin controls:", showAdmin);
+    
     if (showAdmin) {
+      // Create a container for admin actions with better spacing
+      // Add extra margin top (mt-8 instead of mt-4) to position buttons lower
+      const adminButtonsContainer = document.createElement("div");
+      adminButtonsContainer.className = "flex flex-wrap gap-2 mt-8";
+      
+      // Create Edit button with inline styling
       const editLink = document.createElement("a");
       editLink.href = `/feed/edit.html?id=${post.id}`;
       editLink.textContent = "Edit";
-      editLink.className = "text-blue-500 hover:underline";
-      postElement.appendChild(editLink);
+      editLink.style.backgroundColor = "#fef08a"; // Yellow 200
+      editLink.style.color = "#854d0e"; // Yellow 800
+      editLink.style.padding = "4px 12px";
+      editLink.style.borderRadius = "4px";
+      editLink.style.fontSize = "12px";
+      editLink.style.fontWeight = "500";
+      editLink.style.cursor = "pointer";
+      editLink.onclick = function(event) {
+        event.stopPropagation(); // Prevent the post link from being followed
+      };
+      adminButtonsContainer.appendChild(editLink);
 
+      // Create Delete button with inline styling
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Delete";
-      deleteButton.className = "text-red-500 hover:underline";
+      deleteButton.style.backgroundColor = "#fecaca"; // Red 200
+      deleteButton.style.color = "#991b1b"; // Red 800
+      deleteButton.style.padding = "4px 12px";
+      deleteButton.style.borderRadius = "4px";
+      deleteButton.style.fontSize = "12px";
+      deleteButton.style.fontWeight = "500";
+      deleteButton.style.marginLeft = "8px";
+      deleteButton.style.cursor = "pointer";
       deleteButton.onclick = async function (event) {
         event.preventDefault();
+        event.stopPropagation(); // Prevent the post link from being followed
+        console.log("Delete button clicked for post ID:", post.id);
         if (confirm("Are you sure you want to delete this post?")) {
           try {
             await deletePost(post.id);
@@ -426,7 +465,9 @@ export function generatePosts(posts, container) {
           }
         }
       };
-      postElement.appendChild(deleteButton);
+      adminButtonsContainer.appendChild(deleteButton);
+      
+      postElement.appendChild(adminButtonsContainer);
     }
 
     wrapper.appendChild(postElement);
