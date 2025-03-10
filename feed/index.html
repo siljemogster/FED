@@ -24,6 +24,109 @@
       href="/favicons/favicon-16x16.png"
     />
     <link rel="manifest" href="/favicons/site.webmanifest" />
+    <style>
+      /* Global styles */
+      .hidden {
+        display: none !important;
+      }
+      
+      /* Button styling (same as the edit page) */
+      .post-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .edit-button, .delete-button, .update-button, .cancel-button {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-width: 100px;
+        text-decoration: none;
+      }
+
+      .edit-button, .update-button {
+        background-color: rgb(126, 34, 206); /* purple-700 */
+        color: white;
+      }
+
+      .edit-button:hover, .update-button:hover {
+        background-color: rgb(147, 51, 234); /* purple-600 */
+      }
+
+      .delete-button {
+        background-color: rgb(220, 38, 38); /* red-600 */
+        color: white;
+      }
+
+      .delete-button:hover {
+        background-color: rgb(239, 68, 68); /* red-500 */
+      }
+      
+      /* Desktop styles */
+      @media (min-width: 640px) {
+        #mobile-menu-button {
+          display: none !important;
+        }
+      }
+      
+      /* Mobile styles */
+      @media (max-width: 640px) {
+        /* Mobile adjustments */
+        .max-w-2xl {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+        
+        /* Make form elements stack better on mobile */
+        .flex.gap-2 {
+          flex-direction: column;
+        }
+        
+        /* Adjust search input and button on mobile */
+        #search-input {
+          width: 100%;
+        }
+        
+        #search-button {
+          margin-top: 8px;
+          width: 100%;
+        }
+        
+        /* Full width sort dropdown on mobile */
+        #sort-posts {
+          width: 100%;
+          margin-top: 8px;
+        }
+        
+        /* Better spacing for post content on mobile */
+        .p-6 {
+          padding: 16px;
+        }
+        
+        /* Show hamburger button on mobile */
+        #mobile-menu-button {
+          display: inline-flex !important;
+        }
+        
+        /* Mobile styles for post buttons */
+        .post-actions {
+          flex-direction: column;
+          width: 100%;
+          align-items: center;
+        }
+        
+        .edit-button, .delete-button {
+          width: 100%;
+          margin-bottom: 0.5rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -55,50 +158,48 @@
                 Sign Out
               </button>
             </div>
-            <div class="flex items-center sm:hidden">
-              <button
-                type="button"
-                class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-purple-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
-                aria-controls="mobile-menu"
-                aria-expanded="false"
-                onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+            <button
+              type="button"
+              id="mobile-menu-button"
+              class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-purple-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+            >
+              <span class="sr-only">Open main menu</span>
+              <svg
+                class="block h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
               >
-                <span class="sr-only">Open main menu</span>
-                <svg
-                  class="block h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-            </div>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-        <div class="hidden sm:hidden" id="mobile-menu">
-          <div class="pt-10 pb-6 space-y-3">
+        <div class="hidden" id="mobile-menu">
+          <div class="pt-2 pb-3 space-y-1">
             <a
               href="/profile"
-              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
             >
               Profile
             </a>
             <a
               href="/feed"
-              class="text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+              class="text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
             >
               Feed
             </a>
             <button
               href="/"
-              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-6 text-base font-medium transition-colors"
+              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
             >
               Sign Out
             </button>
@@ -156,19 +257,21 @@
             </form>
           </div>
           <div
-            class="flex items-center justify-between gap-2 w-full bg-white p-4 rounded-lg shadow-sm"
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 w-full bg-white p-4 rounded-lg shadow-sm"
           >
-            <div class="relative flex-grow">
-              <div class="flex gap-2">
-                <input
-                  type="search"
-                  placeholder="Search posts..."
-                  id="search-input"
-                  class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700"
-                />
-                <i
-                  class="fas fa-search absolute left-3 top-2.5 text-gray-400"
-                ></i>
+            <div class="relative w-full">
+              <div class="flex flex-col sm:flex-row gap-2">
+                <div class="relative w-full">
+                  <input
+                    type="search"
+                    placeholder="Search posts..."
+                    id="search-input"
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700"
+                  />
+                  <i
+                    class="fas fa-search absolute left-3 top-2.5 text-gray-400"
+                  ></i>
+                </div>
                 <button 
                   id="search-button" 
                   class="px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600"
@@ -179,16 +282,20 @@
             </div>
             <select
               id="sort-posts"
-              class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white text-gray-700"
+              class="w-full sm:w-auto mt-2 sm:mt-0 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-700 bg-white text-gray-700"
             >
               <option value="newest">Most Recent Posts</option>
               <option value="oldest">Oldest Posts</option>
             </select>
           </div>
         </div>
-        <div id="display-container"></div>
+        
+       
+        
+        <!-- Container for dynamically loaded posts -->
+        <div id="display-container" class="max-w-2xl mx-auto p-4"></div>
       </section>
-      </main>
+    </main>
     <footer>
       <div class="bg-gray-70 border-t border-gray-200 py-7 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

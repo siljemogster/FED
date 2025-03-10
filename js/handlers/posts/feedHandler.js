@@ -36,6 +36,207 @@ function setupUserInterface() {
     button.addEventListener("click", handleLogout);
   });
 
+
+  function createCustomDropdown() {
+    const selectElement = document.getElementById("sort-posts");
+    if (!selectElement) return;
+    
+    // Create container
+    const customDropdown = document.createElement('div');
+    customDropdown.className = 'custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative';
+    
+    // Create selected option display
+    const selectedOption = document.createElement('div');
+    selectedOption.className = 'selected-option px-4 py-3 bg-white border rounded-lg cursor-pointer flex items-center justify-between';
+    selectedOption.innerHTML = `
+      <span>${selectElement.options[selectElement.selectedIndex].text}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+      </svg>
+    `;
+    
+    // Create options container
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10';
+    
+    // Add options
+    Array.from(selectElement.options).forEach(option => {
+      const optionElement = document.createElement('div');
+      optionElement.className = 'option px-4 py-4 hover:bg-gray-100 cursor-pointer';
+      optionElement.textContent = option.text;
+      optionElement.dataset.value = option.value;
+      
+      optionElement.addEventListener('click', () => {
+        selectedOption.querySelector('span').textContent = optionElement.textContent;
+        optionsContainer.classList.add('hidden');
+        
+        // Trigger sort function
+        handleSortChange(optionElement.dataset.value);
+        
+        // Update original select for consistency
+        selectElement.value = optionElement.dataset.value;
+      });
+      
+      optionsContainer.appendChild(optionElement);
+    });
+    
+    // Toggle dropdown on click
+    selectedOption.addEventListener('click', () => {
+      optionsContainer.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!customDropdown.contains(event.target)) {
+        optionsContainer.classList.add('hidden');
+      }
+    });
+    
+    // Add to DOM
+    customDropdown.appendChild(selectedOption);
+    customDropdown.appendChild(optionsContainer);
+    
+    // Replace original select
+    selectElement.parentNode.insertBefore(customDropdown, selectElement);
+    selectElement.style.display = 'none';
+    
+    // Add custom styles
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      .custom-dropdown .selected-option {
+        color: #4B5563;
+        transition: all 0.2s ease;
+      }
+      
+      .custom-dropdown .option {
+        transition: background-color 0.2s ease;
+      }
+      
+      @media (max-width: 640px) {
+        .custom-dropdown .option {
+          font-size: 18px;
+          padding: 16px;
+        }
+        .custom-dropdown .selected-option {
+          font-size: 16px;
+          padding: 14px 16px;
+        }
+      }
+    `;
+    document.head.appendChild(styleElement);
+  }
+  
+  function handleSortChange(sortType) {
+    console.log(`Sorting by: ${sortType}`);
+    
+    // Get all posts
+    const posts = document.querySelectorAll('#display-container a[data-timestamp]');
+    const postsArray = Array.from(posts);
+    
+    // Sort posts according to selection
+    if (sortType === "newest") {
+      postsArray.sort((a, b) => {
+        return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
+      });
+    } else {
+      postsArray.sort((a, b) => {
+        return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
+      });
+    }
+    
+    // Get the parent container
+    const container = document.querySelector('#display-container .max-w-2xl');
+    
+    // Re-append posts in the new order
+    if (container) {
+      postsArray.forEach(post => {
+        container.appendChild(post);
+      });
+    }
+  }
+
+ 
+
+
+
+  function replaceNativeDropdown() {
+    // Find the select element
+    const selectElement = document.getElementById("sort-posts");
+    
+    if (!selectElement) return;
+    
+    // Get the parent of the select element
+    const parentElement = selectElement.parentElement;
+    
+    // Create a container for our custom sort buttons
+    const customSortContainer = document.createElement("div");
+    customSortContainer.className = "flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-2 sm:mt-0";
+    
+    // Create the "Most Recent" button
+    const newestButton = document.createElement("button");
+    newestButton.textContent = "Most Recent Posts";
+    newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
+    newestButton.dataset.sort = "newest";
+    
+    // Create the "Oldest" button
+    const oldestButton = document.createElement("button");
+    oldestButton.textContent = "Oldest Posts";
+    oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
+    oldestButton.dataset.sort = "oldest";
+    
+    // Add click handlers
+    newestButton.addEventListener("click", function() {
+      handleSortChange("newest");
+      // Update button styles
+      newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
+      oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
+    });
+    
+    oldestButton.addEventListener("click", function() {
+      handleSortChange("oldest");
+      // Update button styles
+      oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
+      newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
+    });
+    
+    // Add buttons to container
+    customSortContainer.appendChild(newestButton);
+    customSortContainer.appendChild(oldestButton);
+    
+    // Insert the new container and remove the old select
+    parentElement.insertBefore(customSortContainer, selectElement);
+    selectElement.remove();
+  }
+  
+  function handleSortChange(sortType) {
+    console.log(`Sorting by: ${sortType}`);
+    
+    // Get all posts
+    const posts = document.querySelectorAll('#display-container a[data-timestamp]');
+    const postsArray = Array.from(posts);
+    
+    // Sort posts according to selection
+    if (sortType === "newest") {
+      postsArray.sort((a, b) => {
+        return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
+      });
+    } else {
+      postsArray.sort((a, b) => {
+        return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
+      });
+    }
+    
+    // Get the parent container
+    const container = document.querySelector('#display-container .max-w-2xl');
+    
+    // Re-append posts in the new order
+    if (container) {
+      postsArray.forEach(post => {
+        container.appendChild(post);
+      });
+    }
+  }
+
   // addTitleFieldToPostForm();
 }
 
@@ -79,36 +280,48 @@ async function handlePostSubmit(event) {
       body: body,
     };
 
-    if (mediaUrl.trim() !== "") {
+    if (mediaUrl && mediaUrl.trim() !== "") {
       postData.media = {
         url: mediaUrl,
-        alt: mediaAlt,
+        alt: mediaAlt || "",
       };
     }
 
-    console.log();
-
     disableForm(form);
-    // submitButton.innerHTML = `
-    //   <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    //     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    //     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    //   </svg>
-    //   Posting...
-    // `;
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Posting...
+      `;
+    }
 
-    const newPost = await createPost(postData);
-    console.log("Post created successfully:", newPost);
+    // Override window.alert before creating the post
+    const originalAlert = window.alert;
+    window.alert = function() { /* Do nothing */ };
 
-    displaySuccess("Your post has been published!");
-
-    form.reset();
-
-    loadPosts();
+    try {
+      const newPost = await createPost(postData);
+      console.log("Post created successfully:", newPost);
+      
+      // Display your custom notification
+      displaySuccess("Your post has been published!");
+      
+      form.reset();
+      await loadPosts();
+    } catch (innerError) {
+      console.error("Error creating post:", innerError);
+      displayError(`Failed to publish post: ${innerError.message || "Unknown error"}`);
+    } finally {
+      // Restore the original alert function
+      window.alert = originalAlert;
+    }
   } catch (error) {
-    console.log(error);
-
-    displayError(`Failed to publish post: ${error.message}`);
+    console.error("Post submission error:", error);
+    displayError(`Failed to publish post: ${error.message || "Unknown error"}`);
   } finally {
     enableForm(event.target);
     const submitButton = event.target.querySelector('button[type="submit"]');
@@ -435,6 +648,8 @@ export function generatePosts(posts, container) {
       editLink.style.fontSize = "12px";
       editLink.style.fontWeight = "500";
       editLink.style.cursor = "pointer";
+      editLink.style.textAlign = "center"; // Center align the text
+      editLink.style.display = "inline-block"; // This ensures the text-align works properly
       editLink.onclick = function(event) {
         event.stopPropagation(); // Prevent the post link from being followed
       };
@@ -449,21 +664,70 @@ export function generatePosts(posts, container) {
       deleteButton.style.borderRadius = "4px";
       deleteButton.style.fontSize = "12px";
       deleteButton.style.fontWeight = "500";
-      deleteButton.style.marginLeft = "8px";
       deleteButton.style.cursor = "pointer";
       deleteButton.onclick = async function (event) {
         event.preventDefault();
         event.stopPropagation(); // Prevent the post link from being followed
         console.log("Delete button clicked for post ID:", post.id);
-        if (confirm("Are you sure you want to delete this post?")) {
+        
+        // Create custom confirmation instead of using browser confirm
+        const confirmationOverlay = document.createElement("div");
+        confirmationOverlay.style.position = "fixed";
+        confirmationOverlay.style.top = "0";
+        confirmationOverlay.style.left = "0";
+        confirmationOverlay.style.width = "100%";
+        confirmationOverlay.style.height = "100%";
+        confirmationOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        confirmationOverlay.style.display = "flex";
+        confirmationOverlay.style.justifyContent = "center";
+        confirmationOverlay.style.alignItems = "center";
+        confirmationOverlay.style.zIndex = "1000";
+        
+        const confirmationBox = document.createElement("div");
+        confirmationBox.style.backgroundColor = "#fff";
+        confirmationBox.style.padding = "24px";
+        confirmationBox.style.borderRadius = "8px";
+        confirmationBox.style.maxWidth = "400px";
+        confirmationBox.style.textAlign = "center";
+        confirmationBox.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Delete Post</h3>
+          <p style="margin-bottom: 20px;">Are you sure you want to delete this post?</p>
+          <div style="display: flex; justify-content: center; gap: 12px;">
+            <button id="cancel-delete" style="padding: 8px 16px; background-color: #e5e7eb; color: #374151; border-radius: 4px; font-weight: 500;">Cancel</button>
+            <button id="confirm-delete" style="padding: 8px 16px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: 500;">Delete</button>
+          </div>
+        `;
+        
+        confirmationOverlay.appendChild(confirmationBox);
+        document.body.appendChild(confirmationOverlay);
+        
+        document.getElementById("cancel-delete").addEventListener("click", () => {
+          confirmationOverlay.remove();
+        });
+        
+        document.getElementById("confirm-delete").addEventListener("click", async () => {
           try {
+            // Override window.alert before deleting the post
+            const originalAlert = window.alert;
+            window.alert = function() { /* Do nothing */ };
+            
             await deletePost(post.id);
+            confirmationOverlay.remove();
+            
+            // Show success message
+            displaySuccess("Post deleted successfully!");
+            
+            // Restore the original alert function
+            window.alert = originalAlert;
+            
+            // Reload posts
             loadPosts();
           } catch (error) {
             console.error("Error deleting post:", error);
-            displayError(`Failed to delete post: ${error.message}`);
+            displayError(`Failed to delete post: ${error.message || "Unknown error"}`);
+            confirmationOverlay.remove();
           }
-        }
+        });
       };
       adminButtonsContainer.appendChild(deleteButton);
       
