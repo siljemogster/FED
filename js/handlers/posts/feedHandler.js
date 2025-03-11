@@ -18,7 +18,66 @@ export function feedHandler() {
   setupUserInterface();
   setupPostForm();
   loadPosts();
+  setupMobileMenu();
+  preventHorizontalScroll();
 }
+
+function preventHorizontalScroll() {
+  // Add a style to prevent horizontal scrolling
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
+function setupMobileMenu() {
+  // Run after a small delay to ensure DOM is ready
+  setTimeout(() => {
+    console.log('Setting up mobile menu with direct approach');
+    
+    // Find the mobile menu button by ID
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    
+    // Find the mobile menu by ID
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      console.log('Found mobile menu elements');
+      
+      // Add click handler specifically for the mobile menu button
+      mobileMenuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        console.log('Mobile menu button clicked');
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // Also set the onclick attribute as a fallback
+      mobileMenuButton.setAttribute('onclick', "document.getElementById('mobile-menu').classList.toggle('hidden');");
+    } else {
+      console.warn('Could not find mobile menu elements');
+    }
+    
+    // Ensure desktop menu is properly visible on larger screens
+    const desktopMenu = document.querySelector('.hidden.sm\\:flex');
+    if (desktopMenu) {
+      // Add style to ensure desktop menu visibility on larger screens
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
+        @media (min-width: 640px) {
+          .hidden.sm\\:flex {
+            display: flex !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleElement);
+    }
+  }, 300);
+}
+
 
 function setupUserInterface() {
   const username = getUsername();
@@ -36,208 +95,159 @@ function setupUserInterface() {
     button.addEventListener("click", handleLogout);
   });
 
+  // Remove any existing custom dropdowns first
+  const existingDropdowns = document.querySelectorAll('.custom-dropdown, .custom-select-wrapper');
+  existingDropdowns.forEach(dropdown => dropdown.remove());
+  
+  // Now add our single custom dropdown
+  createCustomDropdown();
+}
 
-  function createCustomDropdown() {
-    const selectElement = document.getElementById("sort-posts");
-    if (!selectElement) return;
+function createCustomDropdown() {
+  // Find the select element
+  const selectElement = document.getElementById("sort-posts");
+  if (!selectElement) return;
+  
+  // Create container
+  const customDropdown = document.createElement('div');
+  customDropdown.id = 'custom-sort-dropdown'; // Give it a unique ID
+  customDropdown.className = 'custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative';
+  
+  // Create selected option display
+  const selectedOption = document.createElement('div');
+  selectedOption.className = 'selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between';  selectedOption.innerHTML = `
+    <span>${selectElement.options[selectElement.selectedIndex].text}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+    </svg>
+  `;
+
+  
+  
+  // Create options container
+  const optionsContainer = document.createElement('div');
+  optionsContainer.className = 'options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10';
+  
+  // Add options
+  Array.from(selectElement.options).forEach(option => {
+    const optionElement = document.createElement('div');
+    optionElement.className = 'option px-4 py-4 hover:bg-gray-100 cursor-pointer';
+    optionElement.textContent = option.text;
+    optionElement.dataset.value = option.value;
     
-    // Create container
-    const customDropdown = document.createElement('div');
-    customDropdown.className = 'custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative';
-    
-    // Create selected option display
-    const selectedOption = document.createElement('div');
-    selectedOption.className = 'selected-option px-4 py-3 bg-white border rounded-lg cursor-pointer flex items-center justify-between';
-    selectedOption.innerHTML = `
-      <span>${selectElement.options[selectElement.selectedIndex].text}</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-      </svg>
-    `;
-    
-    // Create options container
-    const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10';
-    
-    // Add options
-    Array.from(selectElement.options).forEach(option => {
-      const optionElement = document.createElement('div');
-      optionElement.className = 'option px-4 py-4 hover:bg-gray-100 cursor-pointer';
-      optionElement.textContent = option.text;
-      optionElement.dataset.value = option.value;
+    optionElement.addEventListener('click', () => {
+      selectedOption.querySelector('span').textContent = optionElement.textContent;
+      optionsContainer.classList.add('hidden');
       
-      optionElement.addEventListener('click', () => {
-        selectedOption.querySelector('span').textContent = optionElement.textContent;
-        optionsContainer.classList.add('hidden');
-        
-        // Trigger sort function
-        handleSortChange(optionElement.dataset.value);
-        
-        // Update original select for consistency
-        selectElement.value = optionElement.dataset.value;
-      });
+      // Sort the posts
+      sortPosts(option.value);
       
-      optionsContainer.appendChild(optionElement);
+      // Update original select for consistency
+      selectElement.value = option.value;
     });
     
-    // Toggle dropdown on click
-    selectedOption.addEventListener('click', () => {
-      optionsContainer.classList.toggle('hidden');
-    });
+    optionsContainer.appendChild(optionElement);
+  });
+  
+  // Toggle dropdown on click
+  selectedOption.addEventListener('click', (e) => {
+    e.stopPropagation();
+    optionsContainer.classList.toggle('hidden');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!customDropdown.contains(event.target)) {
+      optionsContainer.classList.add('hidden');
+    }
+  });
+  
+  // Add to DOM
+  customDropdown.appendChild(selectedOption);
+  customDropdown.appendChild(optionsContainer);
+  
+  // Replace original select
+  selectElement.parentNode.insertBefore(customDropdown, selectElement);
+  selectElement.style.display = 'none';
+  
+  // Add custom styles with a unique ID for the styles
+  const styleElement = document.createElement('style');
+  styleElement.id = 'custom-dropdown-styles';
+  
+  // First remove any existing style elements with this ID
+  const existingStyle = document.getElementById('custom-dropdown-styles');
+  if (existingStyle) {
+    existingStyle.remove();
+  }
+  
+  styleElement.textContent = `
+    .custom-dropdown .selected-option {
+      color: #4B5563;
+      transition: all 0.2s ease;
+      width: 100%; /* Ensure full width */
+      box-sizing: border-box;
+    }
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (event) => {
-      if (!customDropdown.contains(event.target)) {
-        optionsContainer.classList.add('hidden');
-      }
-    });
+    .custom-dropdown .option {
+      transition: background-color 0.2s ease;
+      width: 100%; /* Ensure full width */
+      box-sizing: border-box;
+    }
     
-    // Add to DOM
-    customDropdown.appendChild(selectedOption);
-    customDropdown.appendChild(optionsContainer);
-    
-    // Replace original select
-    selectElement.parentNode.insertBefore(customDropdown, selectElement);
-    selectElement.style.display = 'none';
-    
-    // Add custom styles
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-      .custom-dropdown .selected-option {
-        color: #4B5563;
-        transition: all 0.2s ease;
-      }
+    .custom-dropdown .options-container {
+      width: 100%; /* Ensure full width */
+      box-sizing: border-box;
       
+    }
+    
+    @media (max-width: 640px) {
       .custom-dropdown .option {
-        transition: background-color 0.2s ease;
+        font-size: 18px;
+        padding: 16px;
+       
       }
+      .custom-dropdown .selected-option {
+        font-size: 16px;
+        padding: 14px 16px;
       
-      @media (max-width: 640px) {
-        .custom-dropdown .option {
-          font-size: 18px;
-          padding: 16px;
-        }
-        .custom-dropdown .selected-option {
-          font-size: 16px;
-          padding: 14px 16px;
-        }
       }
-    `;
-    document.head.appendChild(styleElement);
+      .options-container {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
+// Function to sort posts
+function sortPosts(sortType) {
+  console.log(`Sorting posts by: ${sortType}`);
+  
+  // Get all posts
+  const posts = document.querySelectorAll('#display-container a[data-timestamp]');
+  const postsArray = Array.from(posts);
+  
+  // Sort posts based on selection
+  if (sortType === "newest") {
+    postsArray.sort((a, b) => {
+      return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
+    });
+  } else {
+    postsArray.sort((a, b) => {
+      return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
+    });
   }
   
-  function handleSortChange(sortType) {
-    console.log(`Sorting by: ${sortType}`);
-    
-    // Get all posts
-    const posts = document.querySelectorAll('#display-container a[data-timestamp]');
-    const postsArray = Array.from(posts);
-    
-    // Sort posts according to selection
-    if (sortType === "newest") {
-      postsArray.sort((a, b) => {
-        return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
-      });
-    } else {
-      postsArray.sort((a, b) => {
-        return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
-      });
-    }
-    
-    // Get the parent container
-    const container = document.querySelector('#display-container .max-w-2xl');
-    
-    // Re-append posts in the new order
-    if (container) {
-      postsArray.forEach(post => {
-        container.appendChild(post);
-      });
-    }
-  }
-
- 
-
-
-
-  function replaceNativeDropdown() {
-    // Find the select element
-    const selectElement = document.getElementById("sort-posts");
-    
-    if (!selectElement) return;
-    
-    // Get the parent of the select element
-    const parentElement = selectElement.parentElement;
-    
-    // Create a container for our custom sort buttons
-    const customSortContainer = document.createElement("div");
-    customSortContainer.className = "flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-2 sm:mt-0";
-    
-    // Create the "Most Recent" button
-    const newestButton = document.createElement("button");
-    newestButton.textContent = "Most Recent Posts";
-    newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
-    newestButton.dataset.sort = "newest";
-    
-    // Create the "Oldest" button
-    const oldestButton = document.createElement("button");
-    oldestButton.textContent = "Oldest Posts";
-    oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
-    oldestButton.dataset.sort = "oldest";
-    
-    // Add click handlers
-    newestButton.addEventListener("click", function() {
-      handleSortChange("newest");
-      // Update button styles
-      newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
-      oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
-    });
-    
-    oldestButton.addEventListener("click", function() {
-      handleSortChange("oldest");
-      // Update button styles
-      oldestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm bg-purple-700 text-white rounded-lg hover:bg-purple-600 active:bg-purple-800 w-full sm:w-auto";
-      newestButton.className = "px-4 py-3 sm:py-2 text-base sm:text-sm border border-purple-700 text-purple-700 rounded-lg hover:bg-purple-50 active:bg-purple-100 w-full sm:w-auto";
-    });
-    
-    // Add buttons to container
-    customSortContainer.appendChild(newestButton);
-    customSortContainer.appendChild(oldestButton);
-    
-    // Insert the new container and remove the old select
-    parentElement.insertBefore(customSortContainer, selectElement);
-    selectElement.remove();
-  }
+  // Get the container
+  const container = document.querySelector('#display-container .max-w-2xl');
   
-  function handleSortChange(sortType) {
-    console.log(`Sorting by: ${sortType}`);
-    
-    // Get all posts
-    const posts = document.querySelectorAll('#display-container a[data-timestamp]');
-    const postsArray = Array.from(posts);
-    
-    // Sort posts according to selection
-    if (sortType === "newest") {
-      postsArray.sort((a, b) => {
-        return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
-      });
-    } else {
-      postsArray.sort((a, b) => {
-        return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
-      });
-    }
-    
-    // Get the parent container
-    const container = document.querySelector('#display-container .max-w-2xl');
-    
-    // Re-append posts in the new order
-    if (container) {
-      postsArray.forEach(post => {
-        container.appendChild(post);
-      });
-    }
+  // Re-append posts in sorted order
+  if (container) {
+    postsArray.forEach(post => {
+      container.appendChild(post);
+    });
   }
-
-  // addTitleFieldToPostForm();
 }
 
 function addTitleFieldToPostForm() {
@@ -688,7 +698,10 @@ export function generatePosts(posts, container) {
         confirmationBox.style.padding = "24px";
         confirmationBox.style.borderRadius = "8px";
         confirmationBox.style.maxWidth = "400px";
+        confirmationBox.style.width = "90%";
         confirmationBox.style.textAlign = "center";
+        confirmationBox.style.margin = "0 10px";
+        confirmationBox.style.boxSizing = "border-box";
         confirmationBox.innerHTML = `
           <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Delete Post</h3>
           <p style="margin-bottom: 20px;">Are you sure you want to delete this post?</p>
