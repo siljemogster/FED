@@ -3,6 +3,17 @@ import { deletePost } from "../../api/posts/deletePost.js";
 import { getQueryParam } from "../../helpers/getQueryParam.js";
 import { postBelongsToUser } from "../../helpers/auth.js";
 
+/**
+ * Handles the display of a single post page
+ * @returns {Promise<void>} Promise that resolves when the post is loaded and displayed
+ * @example
+ * ```js
+ * // Initialize the single post handler when the page loads
+ * document.addEventListener('DOMContentLoaded', async () => {
+ *   await singlePostHandler();
+ * });
+ * ```
+ */
 export default async function singlePostHandler() {
   // Fix the footer to the bottom of the page
   const footer = document.querySelector("footer");
@@ -17,86 +28,110 @@ export default async function singlePostHandler() {
   mainElement.style.paddingTop = "80px"; // More space at the top
   mainElement.style.paddingBottom = "100px"; // Space for the fixed footer
   mainElement.innerHTML = "";
-  
+
   // Create a container for the post with post-like styling
   const postContainer = document.createElement("div");
   postContainer.className = "max-w-2xl mx-auto p-4 space-y-6 mt-16"; // Added mt-16 for more top margin
   mainElement.appendChild(postContainer);
-  
+
   // Create status container for messages
   const statusContainer = document.createElement("div");
   statusContainer.className = "hidden"; // Hide initially
   statusContainer.style.marginBottom = "24px";
   postContainer.appendChild(statusContainer);
-  
+
   // Create the post card
   const postCard = document.createElement("div");
   postCard.className = "bg-white p-6 rounded-lg shadow-sm";
   postContainer.appendChild(postCard);
-  
+
   // Add loading indicator
   postCard.innerHTML = `
     <div class="flex items-center justify-center py-12">
       <div class="spinner">Loading post...</div>
     </div>
   `;
-  
+
   // Get the id from the querystring
   const id = getQueryParam("id");
-  
+
   if (!id) {
-    showError(postCard, "No post ID provided. Please go back and select a post to view.");
+    showError(
+      postCard,
+      "No post ID provided. Please go back and select a post to view."
+    );
     addBackButton(postContainer);
     return;
   }
-  
+
   // Fetch and display the post
   try {
     const post = await fetchPost(id);
-    console.log("Post loaded:", post);
-    
+
     renderPost(postCard, post);
-    
+
     // Add back button below post
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "flex justify-center mt-6";
-    
+
     const backButton = document.createElement("button");
     backButton.textContent = "Back to Feed";
-    backButton.className = "px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600";
+    backButton.className =
+      "px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600";
     backButton.addEventListener("click", () => {
       window.location.href = "/feed";
     });
-    
+
     buttonContainer.appendChild(backButton);
     postContainer.appendChild(buttonContainer);
-    
   } catch (error) {
     console.error("Error loading post:", error);
-    showError(postCard, `Failed to load post: ${error.message || "Unknown error"}`);
+    showError(
+      postCard,
+      `Failed to load post: ${error.message || "Unknown error"}`
+    );
     addBackButton(postContainer);
   }
 }
 
+/**
+ * Renders a post with all its details into the provided container
+ * @param {HTMLElement} container - The container element to render the post into
+ * @param {Object} post - The post object to render
+ * @param {string} [post.title] - The post title
+ * @param {string} [post.body] - The post content
+ * @param {Object} [post.media] - The post media object
+ * @param {Object} [post.author] - The post author
+ * @param {string} post.created - The post creation date
+ * @param {string} post.id - The post ID
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Render a post into a container
+ * const postContainer = document.getElementById('post-content');
+ * const post = await fetchPost('123');
+ * renderPost(postContainer, post);
+ * ```
+ */
 function renderPost(container, post) {
   const { title, body, media, author, created, id } = post;
-  
+
   // Clear container
-  container.innerHTML = '';
-  
+  container.innerHTML = "";
+
   // Create header with author info
   const headerDiv = document.createElement("div");
   headerDiv.className = "flex items-center gap-3 mb-4";
-  
+
   const authorName = author?.name || "Unknown User";
   const authorAvatar = author?.avatar?.url || null;
-  
-  const avatarHTML = authorAvatar 
+
+  const avatarHTML = authorAvatar
     ? `<img src="${authorAvatar}" alt="${authorName}" class="w-10 h-10 rounded-full object-cover">`
     : `<div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
         <span class="text-purple-700 font-semibold">${authorName.charAt(0).toUpperCase()}</span>
       </div>`;
-  
+
   headerDiv.innerHTML = `
     <div class="flex-shrink-0">
       ${avatarHTML}
@@ -106,9 +141,9 @@ function renderPost(container, post) {
       <div class="text-sm text-gray-500">${formatDate(created)}</div>
     </div>
   `;
-  
+
   container.appendChild(headerDiv);
-  
+
   // Add title if it exists
   if (title) {
     const titleElement = document.createElement("h2");
@@ -116,13 +151,13 @@ function renderPost(container, post) {
     titleElement.textContent = title;
     container.appendChild(titleElement);
   }
-  
+
   // Add body
   const bodyElement = document.createElement("p");
   bodyElement.className = "mb-6";
   bodyElement.textContent = body || "";
   container.appendChild(bodyElement);
-  
+
   // Add media if it exists
   if (media && media.url) {
     const url = media.url.toLowerCase();
@@ -133,7 +168,7 @@ function renderPost(container, post) {
       url.includes("youtube.com") ||
       url.includes("youtu.be") ||
       url.includes("vimeo.com");
-      
+
     if (isVideo) {
       // Handle video content
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
@@ -141,12 +176,12 @@ function renderPost(container, post) {
         if (videoId) {
           const videoContainer = document.createElement("div");
           videoContainer.className = "mb-6 relative pt-[56.25%]"; // 16:9 aspect ratio
-          
+
           const iframe = document.createElement("iframe");
           iframe.src = `https://www.youtube.com/embed/${videoId}`;
           iframe.className = "absolute top-0 left-0 w-full h-full rounded-lg";
           iframe.allowFullscreen = true;
-          
+
           videoContainer.appendChild(iframe);
           container.appendChild(videoContainer);
         }
@@ -155,12 +190,12 @@ function renderPost(container, post) {
         if (videoId) {
           const videoContainer = document.createElement("div");
           videoContainer.className = "mb-6 relative pt-[56.25%]"; // 16:9 aspect ratio
-          
+
           const iframe = document.createElement("iframe");
           iframe.src = `https://player.vimeo.com/video/${videoId}`;
           iframe.className = "absolute top-0 left-0 w-full h-full rounded-lg";
           iframe.allowFullscreen = true;
-          
+
           videoContainer.appendChild(iframe);
           container.appendChild(videoContainer);
         }
@@ -179,21 +214,21 @@ function renderPost(container, post) {
       image.src = media.url;
       image.alt = media.alt || title || "Post image";
       image.className = "w-full rounded-lg mb-6";
-      image.onerror = function() {
+      image.onerror = function () {
         this.onerror = null;
         this.src = "https://placehold.co/600x400?text=Image+Not+Available";
       };
       container.appendChild(image);
     }
   }
-  
+
   // Add interaction stats (likes, comments)
   const interactionDiv = document.createElement("div");
   interactionDiv.className = "flex items-center gap-6 text-gray-500 mb-6";
-  
+
   const likeCount = post._count?.reactions || 0;
   const commentCount = post._count?.comments || 0;
-  
+
   interactionDiv.innerHTML = `
     <div class="flex items-center space-x-1">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
@@ -213,15 +248,15 @@ function renderPost(container, post) {
       <span class="text-gray-500">${commentCount} comments</span>
     </div>
   `;
-  
+
   container.appendChild(interactionDiv);
-  
+
   // Add edit and delete buttons if user owns the post
   const showAdmin = postBelongsToUser(author?.name);
   if (showAdmin) {
     const adminButtonsContainer = document.createElement("div");
     adminButtonsContainer.className = "flex flex-wrap gap-2 mt-8"; // Added mt-8 for more space above buttons
-    
+
     // Edit button (yellow) - matches the one on feed
     const editLink = document.createElement("a");
     editLink.href = `/feed/edit.html?id=${id}`;
@@ -234,7 +269,7 @@ function renderPost(container, post) {
     editLink.style.fontWeight = "500";
     editLink.style.cursor = "pointer";
     adminButtonsContainer.appendChild(editLink);
-    
+
     // Delete button (light red) - matches the one on feed
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
@@ -246,16 +281,17 @@ function renderPost(container, post) {
     deleteButton.style.fontWeight = "500";
     deleteButton.style.marginLeft = "8px";
     deleteButton.style.cursor = "pointer";
-    deleteButton.onclick = async function(event) {
+    deleteButton.onclick = async function (event) {
       if (confirm("Are you sure you want to delete this post?")) {
         try {
           await deletePost(id);
           // Show success message
           const statusContainer = document.querySelector(".status-container");
           if (statusContainer) {
-            statusContainer.className = "block p-4 rounded-lg bg-green-100 text-green-700 mb-4";
+            statusContainer.className =
+              "block p-4 rounded-lg bg-green-100 text-green-700 mb-4";
             statusContainer.textContent = "Post deleted successfully!";
-            
+
             // Redirect to feed after a delay
             setTimeout(() => {
               window.location.href = "/feed";
@@ -270,11 +306,23 @@ function renderPost(container, post) {
       }
     };
     adminButtonsContainer.appendChild(deleteButton);
-    
+
     container.appendChild(adminButtonsContainer);
   }
 }
 
+/**
+ * Displays an error message in the specified container
+ * @param {HTMLElement} container - The container element to show the error in
+ * @param {string} message - The error message to display
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Display an error message in a container
+ * const container = document.getElementById('post-container');
+ * showError(container, "Failed to load post: Network error");
+ * ```
+ */
 function showError(container, message) {
   container.innerHTML = `
     <div class="bg-red-100 text-red-700 p-4 rounded-lg">
@@ -283,17 +331,29 @@ function showError(container, message) {
   `;
 }
 
+/**
+ * Adds a back button to return to the feed page
+ * @param {HTMLElement} container - The container element to add the button to
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Add a back button to a container
+ * const container = document.getElementById('post-container');
+ * addBackButton(container);
+ * ```
+ */
 function addBackButton(container) {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "flex justify-center mt-4";
-  
+
   const backButton = document.createElement("button");
   backButton.textContent = "Back to Feed";
-  backButton.className = "px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600";
+  backButton.className =
+    "px-6 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600";
   backButton.addEventListener("click", () => {
     window.location.href = "/feed";
   });
-  
+
   buttonContainer.appendChild(backButton);
   container.appendChild(buttonContainer);
 }
@@ -302,6 +362,12 @@ function addBackButton(container) {
  * Format a date string into a relative time (e.g., "3 minutes ago")
  * @param {string} dateString - ISO date string
  * @returns {string} - Formatted date string
+ * @example
+ * ```js
+ * // Format a date string as relative time
+ * const relativeTime = formatDate("2023-04-15T14:30:00Z");
+ * // Might return: "2 days ago" (depending on current date)
+ * ```
  */
 function formatDate(dateString) {
   if (!dateString) return "Just now";
@@ -331,6 +397,12 @@ function formatDate(dateString) {
  * Extract YouTube video ID from URL
  * @param {string} url - YouTube URL
  * @returns {string|null} - YouTube video ID or null if not valid
+ * @example
+ * ```js
+ * // Extract video ID from YouTube URL
+ * const videoId = extractYouTubeId("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+ * // Returns: "dQw4w9WgXcQ"
+ * ```
  */
 function extractYouTubeId(url) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -342,6 +414,12 @@ function extractYouTubeId(url) {
  * Extract Vimeo video ID from URL
  * @param {string} url - Vimeo URL
  * @returns {string|null} - Vimeo video ID or null if not valid
+ * @example
+ * ```js
+ * // Extract video ID from Vimeo URL
+ * const videoId = extractVimeoId("https://vimeo.com/123456789");
+ * // Returns: "123456789"
+ * ```
  */
 function extractVimeoId(url) {
   const regExp =

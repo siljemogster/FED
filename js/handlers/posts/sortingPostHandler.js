@@ -1,3 +1,14 @@
+/**
+ * Initializes the post sorting functionality
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize post sorting when the page loads
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   initSorting();
+ * });
+ * ```
+ */
 export function initSorting() {
   const sortPostsDropdown = document.getElementById("sort-posts");
 
@@ -13,15 +24,23 @@ export function initSorting() {
     // Add event listener
     sortPostsDropdown.addEventListener("change", (event) => {
       const sortOrder = event.target.value;
-      console.log(`Sort order changed to: ${sortOrder}`);
       sortExistingPosts(sortOrder);
     });
   }
 }
 
 /**
- * Sort posts that are already in the DOM
- * @param {string} sortOrder - "newest" or "oldest"
+ * Sorts posts that are already in the DOM by their timestamp
+ * @param {string} sortOrder - The order to sort posts ("newest" or "oldest")
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Sort posts by newest first
+ * sortExistingPosts("newest");
+ *
+ * // Sort posts by oldest first
+ * sortExistingPosts("oldest");
+ * ```
  */
 function sortExistingPosts(sortOrder) {
   const postsContainer = document.getElementById("display-container");
@@ -40,18 +59,7 @@ function sortExistingPosts(sortOrder) {
   const posts = Array.from(wrapper.children);
 
   if (posts.length === 0) {
-    console.log("No posts to sort");
     return; // No posts to sort
-  }
-
-  console.log(`Sorting ${posts.length} posts by ${sortOrder}`);
-
-  // Debug: Log some timestamps before sorting
-  if (posts.length > 0) {
-    console.log("Sample timestamps:");
-    for (let i = 0; i < Math.min(3, posts.length); i++) {
-      console.log(`Post ${i}: ${posts[i].dataset.timestamp}`);
-    }
   }
 
   posts.sort((a, b) => {
@@ -66,17 +74,7 @@ function sortExistingPosts(sortOrder) {
     }
   });
 
-  // Debug: Log some timestamps after sorting
-  if (posts.length > 0) {
-    console.log("Sample timestamps after sorting:");
-    for (let i = 0; i < Math.min(3, posts.length); i++) {
-      console.log(`Post ${i}: ${posts[i].dataset.timestamp}`);
-    }
-  }
-
   // Clear and re-append sorted posts
   wrapper.innerHTML = "";
   posts.forEach((post) => wrapper.appendChild(post));
-
-  console.log("Posts sorted successfully");
 }

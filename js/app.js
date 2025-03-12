@@ -9,10 +9,15 @@ import { initSorting } from "./handlers/posts/sortingPostHandler.js";
 
 /**
  * Application router - directs to appropriate handler based on current page
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize the application routing
+ * router();
+ * ```
  */
 function router() {
   const pathname = window.location.pathname;
-  console.log("Current path:", pathname);
 
   // Authentication check for protected routes
   if (
@@ -22,7 +27,6 @@ function router() {
       pathname === "/profile/index.html") &&
     !isLoggedIn()
   ) {
-    console.log("Protected route, redirecting to login");
     location.href = "/";
     return;
   }
@@ -31,19 +35,16 @@ function router() {
   switch (pathname) {
     case "/":
     case "/index.html":
-      console.log("Home/Login page");
       loginHandler();
       break;
 
     case "/register/":
     case "/register/index.html":
-      console.log("Register page");
       registerHandler();
       break;
 
     case "/feed/":
     case "/feed/index.html":
-      console.log("Feed page");
       feedHandler();
       searchPostHandler();
       initSorting();
@@ -59,12 +60,8 @@ function router() {
 
     case "/profile/":
     case "/profile/index.html":
-      console.log("Profile page");
       // profileHandler(); // Implement this if needed
       break;
-
-    default:
-      console.log("No specific handler for this route");
   }
 
   // Set up global navigation handlers
@@ -75,14 +72,19 @@ function router() {
 }
 
 /**
- * Set up global navigation event handlers
+ * Set up global navigation event handlers for the application
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Setup navigation handlers
+ * setupNavigation();
+ * ```
  */
 function setupNavigation() {
   // Handle logout buttons
   const logoutButtons = document.querySelectorAll("button[href='/']");
   logoutButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      console.log("Logging out");
       localStorage.clear();
       location.href = "/";
     });
@@ -90,7 +92,13 @@ function setupNavigation() {
 }
 
 /**
- * Initialize all UI components
+ * Initialize all UI components for the current page
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize all UI components after page load
+ * initializeUIComponents();
+ * ```
  */
 function initializeUIComponents() {
   // Mobile Menu
@@ -107,21 +115,24 @@ function initializeUIComponents() {
 }
 
 /**
- * Mobile Menu Functionality
+ * Initialize the mobile menu functionality with toggle behavior
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Setup mobile menu toggle functionality
+ * initializeMobileMenu();
+ * ```
  */
 function initializeMobileMenu() {
-  console.log("Setting up mobile menu");
   const mobileMenuButton = document.getElementById("mobile-menu-button");
   const mobileMenu = document.getElementById("mobile-menu");
 
   if (!mobileMenuButton) {
-    console.error("Mobile menu button not found");
     // Try to find it by aria attribute as a fallback
     const buttonByAria = document.querySelector(
       "button[aria-controls='mobile-menu']"
     );
     if (buttonByAria) {
-      console.log("Found mobile menu button by aria attribute");
       mobileMenuButton = buttonByAria;
     } else {
       return;
@@ -129,11 +140,8 @@ function initializeMobileMenu() {
   }
 
   if (!mobileMenu) {
-    console.error("Mobile menu not found");
     return;
   }
-
-  console.log("Mobile menu elements found");
 
   // Remove any existing click listeners to prevent duplicates
   mobileMenuButton.removeEventListener("click", toggleMobileMenu);
@@ -141,8 +149,12 @@ function initializeMobileMenu() {
   // Add click event for menu toggle
   mobileMenuButton.addEventListener("click", toggleMobileMenu);
 
+  /**
+   * Toggle the mobile menu visibility
+   * @param {Event} e - The click event
+   * @returns {void} Does not return a value
+   */
   function toggleMobileMenu(e) {
-    console.log("Mobile menu button clicked");
     e.preventDefault();
     e.stopPropagation();
 
@@ -155,8 +167,6 @@ function initializeMobileMenu() {
       "aria-expanded",
       isExpanded ? "true" : "false"
     );
-
-    console.log("Mobile menu is now " + (isExpanded ? "visible" : "hidden"));
   }
 
   // Optional: Close menu when clicking outside
@@ -176,7 +186,13 @@ function initializeMobileMenu() {
 }
 
 /**
- * Post Form Functionality
+ * Initialize the post form submission handler
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Setup post form handling
+ * initializePostForm();
+ * ```
  */
 function initializePostForm() {
   const postForm = document.getElementById("postForm");
@@ -198,8 +214,6 @@ function initializePostForm() {
       mediaAlt: formData.get("mediaAlt") || "",
     };
 
-    console.log("Submitting post:", postData);
-
     // Here you would normally send this data to your server
     // For now, just simulate success
     alert("Post submitted successfully!");
@@ -208,7 +222,13 @@ function initializePostForm() {
 }
 
 /**
- * Search Functionality
+ * Initialize the search functionality
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Setup search functionality
+ * initializeSearch();
+ * ```
  */
 function initializeSearch() {
   const searchInput = document.getElementById("search-input");
@@ -222,7 +242,6 @@ function initializeSearch() {
   searchButton.addEventListener("click", function () {
     const searchTerm = searchInput.value.trim();
     if (searchTerm) {
-      console.log("Searching for:", searchTerm);
       // Your search implementation goes here
     }
   });
@@ -236,7 +255,13 @@ function initializeSearch() {
 }
 
 /**
- * Sorting Functionality (if not already handled by imported initSorting)
+ * Initialize the post sorting functionality if not handled by imported initSorting
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Setup post sorting
+ * initializeSorting();
+ * ```
  */
 function initializeSorting() {
   const sortSelect = document.getElementById("sort-posts");
@@ -250,7 +275,6 @@ function initializeSorting() {
   if (!sortSelect.hasAttribute("data-initialized")) {
     sortSelect.addEventListener("change", function () {
       const sortValue = sortSelect.value;
-      console.log("Sorting posts by:", sortValue);
       // Your sorting implementation goes here
     });
 
@@ -261,7 +285,6 @@ function initializeSorting() {
 
 // Initialize the application when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM fully loaded, initializing application");
   router();
 });
 
@@ -270,7 +293,6 @@ if (
   document.readyState === "complete" ||
   document.readyState === "interactive"
 ) {
-  console.log("Document already ready, initializing application immediately");
   router();
 }
 

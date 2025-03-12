@@ -1,6 +1,20 @@
 import { searchPosts } from "../../api/posts/searchPosts.js";
 import { generatePosts } from "./feedHandler.js";
 
+/**
+ * Sets up a search handler for posts that triggers on search button click
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize the search handler when the page loads
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   searchPostHandler();
+ * });
+ *
+ * // After initialization, users can enter search terms and click the search button
+ * // to find posts that match their query
+ * ```
+ */
 export default function searchPostHandler() {
   const searchButton = document.querySelector("#search-button");
   const searchInput = document.querySelector("#search-input");
@@ -12,12 +26,9 @@ export default function searchPostHandler() {
 
     try {
       const posts = await searchPosts(searchTerm);
-      console.log(posts);
       generatePosts(posts, displayContainer);
-      //   displayPosts(posts);
     } catch (error) {
-      // display error message
-      console.log(error);
+      console.error("Error searching posts:", error);
     }
   });
 }

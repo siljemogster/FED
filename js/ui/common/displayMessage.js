@@ -1,8 +1,21 @@
 /**
- * Display a message in a container element
- * @param {string|HTMLElement} container - Container element or selector
- * @param {string} messageType - Type of message (error, success, warning, info)
+ * Display a message in a container element with appropriate styling
+ * @param {string|HTMLElement} container - Container element or CSS selector string
+ * @param {string} messageType - Type of message ('error', 'success', 'warning', or 'info')
  * @param {string} message - Message content (can include HTML)
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Display an error message using a CSS selector
+ * displayMessage("#message-container", "error", "Invalid email or password");
+ *
+ * // Display a success message using an HTML element
+ * const container = document.getElementById("notification-area");
+ * displayMessage(container, "success", "Your profile has been updated successfully");
+ *
+ * // Display a warning message with HTML content
+ * displayMessage("#alerts", "warning", "Your session will expire in <strong>5 minutes</strong>");
+ * ```
  */
 export function displayMessage(container, messageType, message) {
   let parent = container;
