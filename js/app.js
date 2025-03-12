@@ -5,7 +5,7 @@ import { feedHandler } from "./handlers/posts/feedHandler.js";
 import searchPostHandler from "./handlers/posts/searchPostHandler.js";
 import singlePostHandler from "./handlers/posts/singlePostHandler.js";
 import { isLoggedIn } from "./helpers/storage.js";
-import { initSorting } from "./handlers/posts/sortingPostsHandler.js";
+import { initSorting } from "./handlers/posts/sortingPostHandler.js";
 
 /**
  * Application router - directs to appropriate handler based on current page

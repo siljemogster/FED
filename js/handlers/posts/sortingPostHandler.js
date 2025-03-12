@@ -1,12 +1,3 @@
-/**
- * Post Sorting Handler
- * Provides functionality to sort posts in the feed
- */
-
-/**
- * Initialize sorting functionality for posts
- * This uses a modular approach that works with existing post fetching logic
- */
 export function initSorting() {
   const sortPostsDropdown = document.getElementById("sort-posts");
 
