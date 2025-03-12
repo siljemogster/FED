@@ -7,20 +7,17 @@
 export function displayMessage(container, messageType, message) {
   let parent = container;
 
-
   if (typeof container === "string") {
     parent = document.querySelector(container);
   }
-  
 
   if (!parent) {
     console.error(`Container ${container} not found`);
     return;
   }
 
-
   let cssClass = "font-semibold p-4 rounded-lg my-3";
-  
+
   switch (messageType) {
     case "error":
       cssClass += " text-red-700 bg-red-100";
@@ -37,7 +34,6 @@ export function displayMessage(container, messageType, message) {
     default:
       cssClass += " text-gray-700";
   }
-
 
   parent.innerHTML = `
     <div class="${cssClass}" role="alert">
