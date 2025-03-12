@@ -6,11 +6,19 @@ import { isLoggedIn, getUsername } from "../../helpers/storage.js";
 import { postBelongsToUser } from "../../helpers/auth.js";
 import filterPostHandler from "./filterPostHandler.js";
 
+/**
+ * Initializes the feed page by setting up the user interface, post form, and loading posts
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize the feed handler when the page loads
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   feedHandler();
+ * });
+ * ```
+ */
 export function feedHandler() {
-  console.log("Feed handler initialized");
-
   if (!isLoggedIn()) {
-    console.log("User not logged in, redirecting to login page");
     location.href = "/";
     return;
   }
@@ -22,9 +30,13 @@ export function feedHandler() {
   preventHorizontalScroll();
 }
 
+/**
+ * Prevents horizontal scrolling by adding styles to the document
+ * @returns {void} Does not return a value
+ */
 function preventHorizontalScroll() {
   // Add a style to prevent horizontal scrolling
-  const styleElement = document.createElement('style');
+  const styleElement = document.createElement("style");
   styleElement.textContent = `
     html, body {
       max-width: 100%;
@@ -34,38 +46,38 @@ function preventHorizontalScroll() {
   document.head.appendChild(styleElement);
 }
 
+/**
+ * Sets up the mobile menu functionality with toggle behavior
+ * @returns {void} Does not return a value
+ */
 function setupMobileMenu() {
   // Run after a small delay to ensure DOM is ready
   setTimeout(() => {
-    console.log('Setting up mobile menu with direct approach');
-    
     // Find the mobile menu button by ID
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    
+    const mobileMenuButton = document.getElementById("mobile-menu-button");
+
     // Find the mobile menu by ID
-    const mobileMenu = document.getElementById('mobile-menu');
-    
+    const mobileMenu = document.getElementById("mobile-menu");
+
     if (mobileMenuButton && mobileMenu) {
-      console.log('Found mobile menu elements');
-      
       // Add click handler specifically for the mobile menu button
-      mobileMenuButton.addEventListener('click', function(e) {
+      mobileMenuButton.addEventListener("click", function (e) {
         e.stopPropagation();
-        console.log('Mobile menu button clicked');
-        mobileMenu.classList.toggle('hidden');
+        mobileMenu.classList.toggle("hidden");
       });
-      
+
       // Also set the onclick attribute as a fallback
-      mobileMenuButton.setAttribute('onclick', "document.getElementById('mobile-menu').classList.toggle('hidden');");
-    } else {
-      console.warn('Could not find mobile menu elements');
+      mobileMenuButton.setAttribute(
+        "onclick",
+        "document.getElementById('mobile-menu').classList.toggle('hidden');"
+      );
     }
-    
+
     // Ensure desktop menu is properly visible on larger screens
-    const desktopMenu = document.querySelector('.hidden.sm\\:flex');
+    const desktopMenu = document.querySelector(".hidden.sm\\:flex");
     if (desktopMenu) {
       // Add style to ensure desktop menu visibility on larger screens
-      const styleElement = document.createElement('style');
+      const styleElement = document.createElement("style");
       styleElement.textContent = `
         @media (min-width: 640px) {
           .hidden.sm\\:flex {
@@ -78,10 +90,12 @@ function setupMobileMenu() {
   }, 300);
 }
 
-
+/**
+ * Sets up the user interface by updating username elements and creating the custom dropdown
+ * @returns {void} Does not return a value
+ */
 function setupUserInterface() {
   const username = getUsername();
-  console.log("Current user:", username);
 
   const userNameElements = document.querySelectorAll(".user-name");
   if (username && userNameElements.length) {
@@ -96,90 +110,100 @@ function setupUserInterface() {
   });
 
   // Remove any existing custom dropdowns first
-  const existingDropdowns = document.querySelectorAll('.custom-dropdown, .custom-select-wrapper');
-  existingDropdowns.forEach(dropdown => dropdown.remove());
-  
+  const existingDropdowns = document.querySelectorAll(
+    ".custom-dropdown, .custom-select-wrapper"
+  );
+  existingDropdowns.forEach((dropdown) => dropdown.remove());
+
   // Now add our single custom dropdown
   createCustomDropdown();
 }
 
+/**
+ * Creates a custom dropdown menu for post sorting
+ * @returns {void} Does not return a value
+ */
 function createCustomDropdown() {
   // Find the select element
   const selectElement = document.getElementById("sort-posts");
   if (!selectElement) return;
-  
+
   // Create container
-  const customDropdown = document.createElement('div');
-  customDropdown.id = 'custom-sort-dropdown'; // Give it a unique ID
-  customDropdown.className = 'custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative';
-  
+  const customDropdown = document.createElement("div");
+  customDropdown.id = "custom-sort-dropdown"; // Give it a unique ID
+  customDropdown.className =
+    "custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative";
+
   // Create selected option display
-  const selectedOption = document.createElement('div');
-  selectedOption.className = 'selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between h-11 text-sm';  selectedOption.innerHTML = `
+  const selectedOption = document.createElement("div");
+  selectedOption.className =
+    "selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between h-11 text-sm";
+  selectedOption.innerHTML = `
     <span>${selectElement.options[selectElement.selectedIndex].text}</span>
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
       <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
     </svg>
   `;
 
-  
-  
   // Create options container
-  const optionsContainer = document.createElement('div');
-  optionsContainer.className = 'options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10';
-  
+  const optionsContainer = document.createElement("div");
+  optionsContainer.className =
+    "options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10";
+
   // Add options
-  Array.from(selectElement.options).forEach(option => {
-    const optionElement = document.createElement('div');
-    optionElement.className = 'option px-4 py-4 hover:bg-gray-100 cursor-pointer';
+  Array.from(selectElement.options).forEach((option) => {
+    const optionElement = document.createElement("div");
+    optionElement.className =
+      "option px-4 py-4 hover:bg-gray-100 cursor-pointer";
     optionElement.textContent = option.text;
     optionElement.dataset.value = option.value;
-    
-    optionElement.addEventListener('click', () => {
-      selectedOption.querySelector('span').textContent = optionElement.textContent;
-      optionsContainer.classList.add('hidden');
-      
+
+    optionElement.addEventListener("click", () => {
+      selectedOption.querySelector("span").textContent =
+        optionElement.textContent;
+      optionsContainer.classList.add("hidden");
+
       // Sort the posts
       sortPosts(option.value);
-      
+
       // Update original select for consistency
       selectElement.value = option.value;
     });
-    
+
     optionsContainer.appendChild(optionElement);
   });
-  
+
   // Toggle dropdown on click
-  selectedOption.addEventListener('click', (e) => {
+  selectedOption.addEventListener("click", (e) => {
     e.stopPropagation();
-    optionsContainer.classList.toggle('hidden');
+    optionsContainer.classList.toggle("hidden");
   });
-  
+
   // Close dropdown when clicking outside
-  document.addEventListener('click', (event) => {
+  document.addEventListener("click", (event) => {
     if (!customDropdown.contains(event.target)) {
-      optionsContainer.classList.add('hidden');
+      optionsContainer.classList.add("hidden");
     }
   });
-  
+
   // Add to DOM
   customDropdown.appendChild(selectedOption);
   customDropdown.appendChild(optionsContainer);
-  
+
   // Replace original select
   selectElement.parentNode.insertBefore(customDropdown, selectElement);
-  selectElement.style.display = 'none';
-  
+  selectElement.style.display = "none";
+
   // Add custom styles with a unique ID for the styles
-  const styleElement = document.createElement('style');
-  styleElement.id = 'custom-dropdown-styles';
-  
+  const styleElement = document.createElement("style");
+  styleElement.id = "custom-dropdown-styles";
+
   // First remove any existing style elements with this ID
-  const existingStyle = document.getElementById('custom-dropdown-styles');
+  const existingStyle = document.getElementById("custom-dropdown-styles");
   if (existingStyle) {
     existingStyle.remove();
   }
-  
+
   styleElement.textContent = `
   .custom-dropdown {
     height: 3rem; /* 44px, equivalent to h-5 */
@@ -217,14 +241,23 @@ function createCustomDropdown() {
   document.head.appendChild(styleElement);
 }
 
-// Function to sort posts
+/**
+ * Sorts posts based on the selected sort type
+ * @param {string} sortType - The type of sort to apply (e.g., "newest" or "oldest")
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Sort posts by newest first
+ * sortPosts("newest");
+ * ```
+ */
 function sortPosts(sortType) {
-  console.log(`Sorting posts by: ${sortType}`);
-  
   // Get all posts
-  const posts = document.querySelectorAll('#display-container a[data-timestamp]');
+  const posts = document.querySelectorAll(
+    "#display-container a[data-timestamp]"
+  );
   const postsArray = Array.from(posts);
-  
+
   // Sort posts based on selection
   if (sortType === "newest") {
     postsArray.sort((a, b) => {
@@ -235,18 +268,22 @@ function sortPosts(sortType) {
       return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
     });
   }
-  
+
   // Get the container
-  const container = document.querySelector('#display-container .max-w-2xl');
-  
+  const container = document.querySelector("#display-container .max-w-2xl");
+
   // Re-append posts in sorted order
   if (container) {
-    postsArray.forEach(post => {
+    postsArray.forEach((post) => {
       container.appendChild(post);
     });
   }
 }
 
+/**
+ * Adds a title field to the post form
+ * @returns {void} Does not return a value
+ */
 function addTitleFieldToPostForm() {
   const postForm = document.getElementById("postForm");
   if (!postForm) return;
@@ -265,6 +302,10 @@ function addTitleFieldToPostForm() {
   textarea.parentNode.insertBefore(titleInput, textarea);
 }
 
+/**
+ * Sets up the post form submission handler
+ * @returns {void} Does not return a value
+ */
 function setupPostForm() {
   const postForm = document.getElementById("postForm");
   if (postForm) {
@@ -272,6 +313,17 @@ function setupPostForm() {
   }
 }
 
+/**
+ * Handles the post form submission
+ * @param {Event} event - The form submission event
+ * @returns {Promise<void>} Promise that resolves when post submission is complete
+ * @example
+ * ```js
+ * // This function is typically attached to a form's submit event
+ * const form = document.getElementById("postForm");
+ * form.addEventListener("submit", handlePostSubmit);
+ * ```
+ */
 async function handlePostSubmit(event) {
   event.preventDefault();
 
@@ -308,20 +360,23 @@ async function handlePostSubmit(event) {
 
     // Override window.alert before creating the post
     const originalAlert = window.alert;
-    window.alert = function() { /* Do nothing */ };
+    window.alert = function () {
+      /* Do nothing */
+    };
 
     try {
       const newPost = await createPost(postData);
-      console.log("Post created successfully:", newPost);
-      
+
       // Display your custom notification
       displaySuccess("Your post has been published!");
-      
+
       form.reset();
       await loadPosts();
     } catch (innerError) {
       console.error("Error creating post:", innerError);
-      displayError(`Failed to publish post: ${innerError.message || "Unknown error"}`);
+      displayError(
+        `Failed to publish post: ${innerError.message || "Unknown error"}`
+      );
     } finally {
       // Restore the original alert function
       window.alert = originalAlert;
@@ -339,8 +394,14 @@ async function handlePostSubmit(event) {
 }
 
 /**
- * Display an error message
+ * Display an error message as a notification
  * @param {string} message - Error message to display
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Display an error notification
+ * displayError("Failed to load posts: Network error");
+ * ```
  */
 function displayError(message) {
   const messageContainer = document.createElement("div");
@@ -355,8 +416,14 @@ function displayError(message) {
 }
 
 /**
- * Display a success message
+ * Display a success message as a notification
  * @param {string} message - Success message to display
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Display a success notification
+ * displaySuccess("Post created successfully!");
+ * ```
  */
 function displaySuccess(message) {
   const messageContainer = document.createElement("div");
@@ -373,6 +440,13 @@ function displaySuccess(message) {
 /**
  * Disable all form inputs and buttons
  * @param {HTMLFormElement} form - Form to disable
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Disable all elements in a form during submission
+ * const form = document.getElementById("myForm");
+ * disableForm(form);
+ * ```
  */
 function disableForm(form) {
   form
@@ -383,6 +457,13 @@ function disableForm(form) {
 /**
  * Enable all form inputs and buttons
  * @param {HTMLFormElement} form - Form to enable
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Re-enable all elements in a form after submission
+ * const form = document.getElementById("myForm");
+ * enableForm(form);
+ * ```
  */
 function enableForm(form) {
   form
@@ -390,12 +471,24 @@ function enableForm(form) {
     .forEach((el) => (el.disabled = false));
 }
 
+/**
+ * Handles the logout action by clearing local storage and redirecting
+ * @returns {void} Does not return a value
+ */
 function handleLogout() {
-  console.log("Logging out...");
   localStorage.clear();
   location.href = "/";
 }
 
+/**
+ * Loads posts from API and displays them
+ * @returns {Promise<void>} Promise that resolves when posts are loaded and displayed
+ * @example
+ * ```js
+ * // Load and display posts
+ * await loadPosts();
+ * ```
+ */
 async function loadPosts() {
   const displayContainer = document.getElementById("display-container");
 
@@ -413,20 +506,18 @@ async function loadPosts() {
       </div>
     `;
 
-    console.log("Fetching posts...");
     const posts = await fetchPosts();
-    console.log("Posts received:", posts);
 
     displayContainer.innerHTML = "";
 
     if (posts && posts.length > 0) {
       generatePosts(posts, displayContainer);
-      
+
       // Add try-catch around filterPostHandler to prevent it from breaking the page
       try {
         filterPostHandler(posts, displayContainer);
       } catch (filterError) {
-        console.warn("Filter post handler error:", filterError);
+        console.error("Filter post handler error:", filterError);
         // Continue even if filter handler fails
       }
     } else {
@@ -457,9 +548,16 @@ async function loadPosts() {
  * Generate HTML for posts and append to container
  * @param {Array} posts - Array of post objects
  * @param {HTMLElement} container - Container element to append posts to
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Display posts in a container
+ * const posts = await fetchPosts();
+ * const container = document.getElementById("postsContainer");
+ * generatePosts(posts, container);
+ * ```
  */
 export function generatePosts(posts, container) {
-  console.log("Generating posts:", posts);
   container.innerHTML = "";
 
   const wrapper = document.createElement("div");
@@ -469,7 +567,7 @@ export function generatePosts(posts, container) {
     const postElement = document.createElement("a");
     postElement.className = "bg-white p-6 rounded-lg shadow-sm block";
     postElement.href = `/feed/post.html?id=${post.id}`;
-    
+
     // Add timestamp data attribute for sorting
     postElement.dataset.timestamp = post.created;
 
@@ -636,14 +734,13 @@ export function generatePosts(posts, container) {
     // Admin buttons section - only show for posts that belong to the current user
     // Use the existing postBelongsToUser function to check ownership
     const showAdmin = postBelongsToUser(post.author?.name);
-    console.log("Post author:", post.author?.name, "Show admin controls:", showAdmin);
-    
+
     if (showAdmin) {
       // Create a container for admin actions with better spacing
       // Add extra margin top (mt-8 instead of mt-4) to position buttons lower
       const adminButtonsContainer = document.createElement("div");
       adminButtonsContainer.className = "flex flex-wrap gap-2 mt-8";
-      
+
       // Create Edit button with inline styling
       const editLink = document.createElement("a");
       editLink.href = `/feed/edit.html?id=${post.id}`;
@@ -657,7 +754,7 @@ export function generatePosts(posts, container) {
       editLink.style.cursor = "pointer";
       editLink.style.textAlign = "center"; // Center align the text
       editLink.style.display = "inline-block"; // This ensures the text-align works properly
-      editLink.onclick = function(event) {
+      editLink.onclick = function (event) {
         event.stopPropagation(); // Prevent the post link from being followed
       };
       adminButtonsContainer.appendChild(editLink);
@@ -675,8 +772,7 @@ export function generatePosts(posts, container) {
       deleteButton.onclick = async function (event) {
         event.preventDefault();
         event.stopPropagation(); // Prevent the post link from being followed
-        console.log("Delete button clicked for post ID:", post.id);
-        
+
         // Create custom confirmation instead of using browser confirm
         const confirmationOverlay = document.createElement("div");
         confirmationOverlay.style.position = "fixed";
@@ -689,7 +785,7 @@ export function generatePosts(posts, container) {
         confirmationOverlay.style.justifyContent = "center";
         confirmationOverlay.style.alignItems = "center";
         confirmationOverlay.style.zIndex = "1000";
-        
+
         const confirmationBox = document.createElement("div");
         confirmationBox.style.backgroundColor = "#fff";
         confirmationBox.style.padding = "24px";
@@ -707,40 +803,48 @@ export function generatePosts(posts, container) {
             <button id="confirm-delete" style="padding: 8px 16px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: 500;">Delete</button>
           </div>
         `;
-        
+
         confirmationOverlay.appendChild(confirmationBox);
         document.body.appendChild(confirmationOverlay);
-        
-        document.getElementById("cancel-delete").addEventListener("click", () => {
-          confirmationOverlay.remove();
-        });
-        
-        document.getElementById("confirm-delete").addEventListener("click", async () => {
-          try {
-            // Override window.alert before deleting the post
-            const originalAlert = window.alert;
-            window.alert = function() { /* Do nothing */ };
-            
-            await deletePost(post.id);
+
+        document
+          .getElementById("cancel-delete")
+          .addEventListener("click", () => {
             confirmationOverlay.remove();
-            
-            // Show success message
-            displaySuccess("Post deleted successfully!");
-            
-            // Restore the original alert function
-            window.alert = originalAlert;
-            
-            // Reload posts
-            loadPosts();
-          } catch (error) {
-            console.error("Error deleting post:", error);
-            displayError(`Failed to delete post: ${error.message || "Unknown error"}`);
-            confirmationOverlay.remove();
-          }
-        });
+          });
+
+        document
+          .getElementById("confirm-delete")
+          .addEventListener("click", async () => {
+            try {
+              // Override window.alert before deleting the post
+              const originalAlert = window.alert;
+              window.alert = function () {
+                /* Do nothing */
+              };
+
+              await deletePost(post.id);
+              confirmationOverlay.remove();
+
+              // Show success message
+              displaySuccess("Post deleted successfully!");
+
+              // Restore the original alert function
+              window.alert = originalAlert;
+
+              // Reload posts
+              loadPosts();
+            } catch (error) {
+              console.error("Error deleting post:", error);
+              displayError(
+                `Failed to delete post: ${error.message || "Unknown error"}`
+              );
+              confirmationOverlay.remove();
+            }
+          });
       };
       adminButtonsContainer.appendChild(deleteButton);
-      
+
       postElement.appendChild(adminButtonsContainer);
     }
 
@@ -754,6 +858,12 @@ export function generatePosts(posts, container) {
  * Extract YouTube video ID from URL
  * @param {string} url - YouTube URL
  * @returns {string|null} - YouTube video ID or null if not valid
+ * @example
+ * ```js
+ * // Extract video ID from YouTube URL
+ * const videoId = extractYouTubeId("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+ * // Returns: "dQw4w9WgXcQ"
+ * ```
  */
 function extractYouTubeId(url) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -765,6 +875,12 @@ function extractYouTubeId(url) {
  * Extract Vimeo video ID from URL
  * @param {string} url - Vimeo URL
  * @returns {string|null} - Vimeo video ID or null if not valid
+ * @example
+ * ```js
+ * // Extract video ID from Vimeo URL
+ * const videoId = extractVimeoId("https://vimeo.com/123456789");
+ * // Returns: "123456789"
+ * ```
  */
 function extractVimeoId(url) {
   const regExp =
@@ -777,6 +893,12 @@ function extractVimeoId(url) {
  * Format a date string into a relative time (e.g., "3 minutes ago")
  * @param {string} dateString - ISO date string
  * @returns {string} - Formatted date string
+ * @example
+ * ```js
+ * // Format a date as relative time
+ * const relativeTime = formatDate("2023-04-15T14:30:00Z");
+ * // Might return: "2 days ago" (depending on current date)
+ * ```
  */
 function formatDate(dateString) {
   if (!dateString) return "Just now";

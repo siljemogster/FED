@@ -2,14 +2,24 @@ import { deletePost } from "../../api/posts/deletePost.js";
 import { displayMessage } from "../../ui/common/displayMessage.js";
 
 /**
-
- * @param {HTMLElement} postElement 
- * @param {Object} post 
- * @param {Function} reloadPostsCallback 
- * @returns {HTMLButtonElement}
+ * Creates and adds a delete button to a post element with confirmation modal functionality
+ * @param {HTMLElement} postElement - The DOM element representing the post
+ * @param {Object} post - The post object containing post data
+ * @param {string} post.id - The unique identifier of the post
+ * @param {Function} [reloadPostsCallback] - Optional callback function to reload posts after deletion
+ * @returns {HTMLButtonElement} The created delete button element
+ * @example
+ * ```js
+ * // Create a delete button for a post
+ * const postDiv = document.querySelector('.post');
+ * const postData = { id: '123', title: 'My Post' };
+ * const reloadPosts = () => fetchPosts();
+ *
+ * const deleteButton = addDeletePostButton(postDiv, postData, reloadPosts);
+ * postDiv.appendChild(deleteButton);
+ * ```
  */
 export function addDeletePostButton(postElement, post, reloadPostsCallback) {
-
   const deleteButton = document.createElement("button");
   deleteButton.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-red-600 hover:text-red-800">
@@ -19,9 +29,9 @@ export function addDeletePostButton(postElement, post, reloadPostsCallback) {
   deleteButton.className = "p-2 rounded-full hover:bg-gray-100";
   deleteButton.setAttribute("aria-label", "Delete post");
   deleteButton.addEventListener("click", () => {
-   
     const confirmModal = document.createElement("div");
-    confirmModal.className = "fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center";
+    confirmModal.className =
+      "fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center";
     confirmModal.innerHTML = `
       <div class="bg-white p-6 rounded-lg w-full max-w-md mx-4">
         <h2 class="text-2xl font-bold mb-4 text-gray-800">Confirm Delete</h2>
@@ -32,15 +42,14 @@ export function addDeletePostButton(postElement, post, reloadPostsCallback) {
         </div>
       </div>
     `;
-    
+
     const cancelBtn = confirmModal.querySelector("#cancelDeleteBtn");
     const confirmBtn = confirmModal.querySelector("#confirmDeleteBtn");
-    
+
     cancelBtn.addEventListener("click", () => confirmModal.remove());
-    
+
     confirmBtn.addEventListener("click", async () => {
       try {
-      
         cancelBtn.disabled = true;
         confirmBtn.disabled = true;
         confirmBtn.innerHTML = `
@@ -50,32 +59,30 @@ export function addDeletePostButton(postElement, post, reloadPostsCallback) {
           </svg>
           Deleting...
         `;
-        
-      
+
         await deletePost(post.id);
-        
-      
+
         displayMessage("#message", "success", "Post deleted successfully!");
-        
-    
+
         confirmModal.remove();
         postElement.remove();
-        
-       
-        if (reloadPostsCallback && typeof reloadPostsCallback === 'function') {
+
+        if (reloadPostsCallback && typeof reloadPostsCallback === "function") {
           reloadPostsCallback();
         }
       } catch (error) {
-        displayMessage("#message", "error", `Failed to delete post: ${error.message}`);
-        
-       
+        displayMessage(
+          "#message",
+          "error",
+          `Failed to delete post: ${error.message}`
+        );
+
         cancelBtn.disabled = false;
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = "Delete";
       }
     });
-    
-   
+
     document.body.appendChild(confirmModal);
   });
 

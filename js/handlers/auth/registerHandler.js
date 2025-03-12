@@ -1,7 +1,16 @@
 import { register } from "../../api/auth/register.js";
-import { saveToken, saveUsername } from "../../helpers/storage.js";
 import { displayMessage } from "../../ui/common/displayMessage.js";
 
+/**
+ * Initializes the registration form handler by attaching an event listener to the register form
+ * @returns {void} Does not return a value
+ * @example
+ * ```js
+ * // Initialize the registration form handler
+ * registerHandler();
+ * // The registration form will now handle submissions
+ * ```
+ */
 export function registerHandler() {
   const form = document.querySelector("#registerForm");
 
@@ -10,6 +19,16 @@ export function registerHandler() {
   }
 }
 
+/**
+ * Handles the registration form submission event
+ * @param {Event} event - The form submission event
+ * @returns {Promise<void>} Promise that resolves when registration is complete
+ * @example
+ * ```js
+ * // This function is not typically called directly but through an event listener
+ * form.addEventListener("submit", submitForm);
+ * ```
+ */
 async function submitForm(event) {
   event.preventDefault();
 
@@ -30,7 +49,6 @@ async function submitForm(event) {
     };
     delete profile.avatarUrl;
   }
-  console.log(profile);
 
   try {
     await register(profile);
