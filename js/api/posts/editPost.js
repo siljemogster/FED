@@ -10,29 +10,29 @@ import { getToken } from "../../helpers/storage.js";
 export async function updatePost(postId, postData) {
   try {
     const accessToken = getToken();
-    
+
     if (!accessToken) {
       throw new Error("You must be logged in to update a post");
     }
-    
+
     const options = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-        "X-Noroff-API-Key": NOROFF_API_KEY
+        Authorization: `Bearer ${accessToken}`,
+        "X-Noroff-API-Key": NOROFF_API_KEY,
       },
-      body: JSON.stringify(postData)
+      body: JSON.stringify(postData),
     };
-    
+
     console.log(`Updating post ${postId} with data:`, postData);
     const response = await fetch(`${POSTS_URL}/${postId}`, options);
-    
+
     if (!response.ok) {
       const json = await response.json().catch(() => ({}));
       throw new Error(json.errors?.[0]?.message || "Failed to update post");
     }
-    
+
     const json = await response.json();
     return json.data;
   } catch (error) {

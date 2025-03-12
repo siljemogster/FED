@@ -18,7 +18,66 @@ export function feedHandler() {
   setupUserInterface();
   setupPostForm();
   loadPosts();
+  setupMobileMenu();
+  preventHorizontalScroll();
 }
+
+function preventHorizontalScroll() {
+  // Add a style to prevent horizontal scrolling
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
+function setupMobileMenu() {
+  // Run after a small delay to ensure DOM is ready
+  setTimeout(() => {
+    console.log('Setting up mobile menu with direct approach');
+    
+    // Find the mobile menu button by ID
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    
+    // Find the mobile menu by ID
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+      console.log('Found mobile menu elements');
+      
+      // Add click handler specifically for the mobile menu button
+      mobileMenuButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        console.log('Mobile menu button clicked');
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // Also set the onclick attribute as a fallback
+      mobileMenuButton.setAttribute('onclick', "document.getElementById('mobile-menu').classList.toggle('hidden');");
+    } else {
+      console.warn('Could not find mobile menu elements');
+    }
+    
+    // Ensure desktop menu is properly visible on larger screens
+    const desktopMenu = document.querySelector('.hidden.sm\\:flex');
+    if (desktopMenu) {
+      // Add style to ensure desktop menu visibility on larger screens
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
+        @media (min-width: 640px) {
+          .hidden.sm\\:flex {
+            display: flex !important;
+          }
+        }
+      `;
+      document.head.appendChild(styleElement);
+    }
+  }, 300);
+}
+
 
 function setupUserInterface() {
   const username = getUsername();
@@ -36,7 +95,156 @@ function setupUserInterface() {
     button.addEventListener("click", handleLogout);
   });
 
-  // addTitleFieldToPostForm();
+  // Remove any existing custom dropdowns first
+  const existingDropdowns = document.querySelectorAll('.custom-dropdown, .custom-select-wrapper');
+  existingDropdowns.forEach(dropdown => dropdown.remove());
+  
+  // Now add our single custom dropdown
+  createCustomDropdown();
+}
+
+function createCustomDropdown() {
+  // Find the select element
+  const selectElement = document.getElementById("sort-posts");
+  if (!selectElement) return;
+  
+  // Create container
+  const customDropdown = document.createElement('div');
+  customDropdown.id = 'custom-sort-dropdown'; // Give it a unique ID
+  customDropdown.className = 'custom-dropdown w-full sm:w-auto mt-2 sm:mt-0 relative';
+  
+  // Create selected option display
+  const selectedOption = document.createElement('div');
+  selectedOption.className = 'selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between h-11 text-sm';  selectedOption.innerHTML = `
+    <span>${selectElement.options[selectElement.selectedIndex].text}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+    </svg>
+  `;
+
+  
+  
+  // Create options container
+  const optionsContainer = document.createElement('div');
+  optionsContainer.className = 'options-container absolute left-0 w-full mt-1 bg-white border rounded-lg shadow-lg hidden z-10';
+  
+  // Add options
+  Array.from(selectElement.options).forEach(option => {
+    const optionElement = document.createElement('div');
+    optionElement.className = 'option px-4 py-4 hover:bg-gray-100 cursor-pointer';
+    optionElement.textContent = option.text;
+    optionElement.dataset.value = option.value;
+    
+    optionElement.addEventListener('click', () => {
+      selectedOption.querySelector('span').textContent = optionElement.textContent;
+      optionsContainer.classList.add('hidden');
+      
+      // Sort the posts
+      sortPosts(option.value);
+      
+      // Update original select for consistency
+      selectElement.value = option.value;
+    });
+    
+    optionsContainer.appendChild(optionElement);
+  });
+  
+  // Toggle dropdown on click
+  selectedOption.addEventListener('click', (e) => {
+    e.stopPropagation();
+    optionsContainer.classList.toggle('hidden');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (event) => {
+    if (!customDropdown.contains(event.target)) {
+      optionsContainer.classList.add('hidden');
+    }
+  });
+  
+  // Add to DOM
+  customDropdown.appendChild(selectedOption);
+  customDropdown.appendChild(optionsContainer);
+  
+  // Replace original select
+  selectElement.parentNode.insertBefore(customDropdown, selectElement);
+  selectElement.style.display = 'none';
+  
+  // Add custom styles with a unique ID for the styles
+  const styleElement = document.createElement('style');
+  styleElement.id = 'custom-dropdown-styles';
+  
+  // First remove any existing style elements with this ID
+  const existingStyle = document.getElementById('custom-dropdown-styles');
+  if (existingStyle) {
+    existingStyle.remove();
+  }
+  
+  styleElement.textContent = `
+  .custom-dropdown {
+    height: 3rem; /* 44px, equivalent to h-5 */
+  }
+
+
+    .custom-dropdown .selected-option {
+    color: #4B5563;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    height: 2.75rem; /* 44px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
+    
+  .custom-dropdown .options-container {
+    width: 100%;
+    box-sizing: border-box;
+    top: 2.75rem; 
+    margin-top: 0.25rem;
+  }
+  
+  @media (max-width: 640px) {
+    .custom-dropdown .selected-option {
+      font-size: 1.125rem; 
+      height: 2.75rem;
+      padding: 0 1rem;
+    }
+  }
+`;
+  document.head.appendChild(styleElement);
+}
+
+// Function to sort posts
+function sortPosts(sortType) {
+  console.log(`Sorting posts by: ${sortType}`);
+  
+  // Get all posts
+  const posts = document.querySelectorAll('#display-container a[data-timestamp]');
+  const postsArray = Array.from(posts);
+  
+  // Sort posts based on selection
+  if (sortType === "newest") {
+    postsArray.sort((a, b) => {
+      return new Date(b.dataset.timestamp) - new Date(a.dataset.timestamp);
+    });
+  } else {
+    postsArray.sort((a, b) => {
+      return new Date(a.dataset.timestamp) - new Date(b.dataset.timestamp);
+    });
+  }
+  
+  // Get the container
+  const container = document.querySelector('#display-container .max-w-2xl');
+  
+  // Re-append posts in sorted order
+  if (container) {
+    postsArray.forEach(post => {
+      container.appendChild(post);
+    });
+  }
 }
 
 function addTitleFieldToPostForm() {
@@ -79,36 +287,48 @@ async function handlePostSubmit(event) {
       body: body,
     };
 
-    if (mediaUrl.trim() !== "") {
+    if (mediaUrl && mediaUrl.trim() !== "") {
       postData.media = {
         url: mediaUrl,
-        alt: mediaAlt,
+        alt: mediaAlt || "",
       };
     }
 
-    console.log();
-
     disableForm(form);
-    // submitButton.innerHTML = `
-    //   <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    //     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    //     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    //   </svg>
-    //   Posting...
-    // `;
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Posting...
+      `;
+    }
 
-    const newPost = await createPost(postData);
-    console.log("Post created successfully:", newPost);
+    // Override window.alert before creating the post
+    const originalAlert = window.alert;
+    window.alert = function() { /* Do nothing */ };
 
-    displaySuccess("Your post has been published!");
-
-    form.reset();
-
-    loadPosts();
+    try {
+      const newPost = await createPost(postData);
+      console.log("Post created successfully:", newPost);
+      
+      // Display your custom notification
+      displaySuccess("Your post has been published!");
+      
+      form.reset();
+      await loadPosts();
+    } catch (innerError) {
+      console.error("Error creating post:", innerError);
+      displayError(`Failed to publish post: ${innerError.message || "Unknown error"}`);
+    } finally {
+      // Restore the original alert function
+      window.alert = originalAlert;
+    }
   } catch (error) {
-    console.log(error);
-
-    displayError(`Failed to publish post: ${error.message}`);
+    console.error("Post submission error:", error);
+    displayError(`Failed to publish post: ${error.message || "Unknown error"}`);
   } finally {
     enableForm(event.target);
     const submitButton = event.target.querySelector('button[type="submit"]');
@@ -201,7 +421,14 @@ async function loadPosts() {
 
     if (posts && posts.length > 0) {
       generatePosts(posts, displayContainer);
-      filterPostHandler(posts, displayContainer);
+      
+      // Add try-catch around filterPostHandler to prevent it from breaking the page
+      try {
+        filterPostHandler(posts, displayContainer);
+      } catch (filterError) {
+        console.warn("Filter post handler error:", filterError);
+        // Continue even if filter handler fails
+      }
     } else {
       displayContainer.innerHTML = `
         <div class="max-w-2xl mx-auto p-4">
@@ -242,6 +469,9 @@ export function generatePosts(posts, container) {
     const postElement = document.createElement("a");
     postElement.className = "bg-white p-6 rounded-lg shadow-sm block";
     postElement.href = `/feed/post.html?id=${post.id}`;
+    
+    // Add timestamp data attribute for sorting
+    postElement.dataset.timestamp = post.created;
 
     const headerDiv = document.createElement("div");
     headerDiv.className = "flex items-center gap-3 mb-4";
@@ -403,30 +633,115 @@ export function generatePosts(posts, container) {
 
     postElement.appendChild(interactionDiv);
 
+    // Admin buttons section - only show for posts that belong to the current user
+    // Use the existing postBelongsToUser function to check ownership
     const showAdmin = postBelongsToUser(post.author?.name);
+    console.log("Post author:", post.author?.name, "Show admin controls:", showAdmin);
+    
     if (showAdmin) {
+      // Create a container for admin actions with better spacing
+      // Add extra margin top (mt-8 instead of mt-4) to position buttons lower
+      const adminButtonsContainer = document.createElement("div");
+      adminButtonsContainer.className = "flex flex-wrap gap-2 mt-8";
+      
+      // Create Edit button with inline styling
       const editLink = document.createElement("a");
       editLink.href = `/feed/edit.html?id=${post.id}`;
       editLink.textContent = "Edit";
-      editLink.className = "text-blue-500 hover:underline";
-      postElement.appendChild(editLink);
+      editLink.style.backgroundColor = "#fef08a"; // Yellow 200
+      editLink.style.color = "#854d0e"; // Yellow 800
+      editLink.style.padding = "4px 12px";
+      editLink.style.borderRadius = "4px";
+      editLink.style.fontSize = "12px";
+      editLink.style.fontWeight = "500";
+      editLink.style.cursor = "pointer";
+      editLink.style.textAlign = "center"; // Center align the text
+      editLink.style.display = "inline-block"; // This ensures the text-align works properly
+      editLink.onclick = function(event) {
+        event.stopPropagation(); // Prevent the post link from being followed
+      };
+      adminButtonsContainer.appendChild(editLink);
 
+      // Create Delete button with inline styling
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Delete";
-      deleteButton.className = "text-red-500 hover:underline";
+      deleteButton.style.backgroundColor = "#fecaca"; // Red 200
+      deleteButton.style.color = "#991b1b"; // Red 800
+      deleteButton.style.padding = "4px 12px";
+      deleteButton.style.borderRadius = "4px";
+      deleteButton.style.fontSize = "12px";
+      deleteButton.style.fontWeight = "500";
+      deleteButton.style.cursor = "pointer";
       deleteButton.onclick = async function (event) {
         event.preventDefault();
-        if (confirm("Are you sure you want to delete this post?")) {
+        event.stopPropagation(); // Prevent the post link from being followed
+        console.log("Delete button clicked for post ID:", post.id);
+        
+        // Create custom confirmation instead of using browser confirm
+        const confirmationOverlay = document.createElement("div");
+        confirmationOverlay.style.position = "fixed";
+        confirmationOverlay.style.top = "0";
+        confirmationOverlay.style.left = "0";
+        confirmationOverlay.style.width = "100%";
+        confirmationOverlay.style.height = "100%";
+        confirmationOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        confirmationOverlay.style.display = "flex";
+        confirmationOverlay.style.justifyContent = "center";
+        confirmationOverlay.style.alignItems = "center";
+        confirmationOverlay.style.zIndex = "1000";
+        
+        const confirmationBox = document.createElement("div");
+        confirmationBox.style.backgroundColor = "#fff";
+        confirmationBox.style.padding = "24px";
+        confirmationBox.style.borderRadius = "8px";
+        confirmationBox.style.maxWidth = "400px";
+        confirmationBox.style.width = "90%";
+        confirmationBox.style.textAlign = "center";
+        confirmationBox.style.margin = "0 10px";
+        confirmationBox.style.boxSizing = "border-box";
+        confirmationBox.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Delete Post</h3>
+          <p style="margin-bottom: 20px;">Are you sure you want to delete this post?</p>
+          <div style="display: flex; justify-content: center; gap: 12px;">
+            <button id="cancel-delete" style="padding: 8px 16px; background-color: #e5e7eb; color: #374151; border-radius: 4px; font-weight: 500;">Cancel</button>
+            <button id="confirm-delete" style="padding: 8px 16px; background-color: #ef4444; color: white; border-radius: 4px; font-weight: 500;">Delete</button>
+          </div>
+        `;
+        
+        confirmationOverlay.appendChild(confirmationBox);
+        document.body.appendChild(confirmationOverlay);
+        
+        document.getElementById("cancel-delete").addEventListener("click", () => {
+          confirmationOverlay.remove();
+        });
+        
+        document.getElementById("confirm-delete").addEventListener("click", async () => {
           try {
+            // Override window.alert before deleting the post
+            const originalAlert = window.alert;
+            window.alert = function() { /* Do nothing */ };
+            
             await deletePost(post.id);
+            confirmationOverlay.remove();
+            
+            // Show success message
+            displaySuccess("Post deleted successfully!");
+            
+            // Restore the original alert function
+            window.alert = originalAlert;
+            
+            // Reload posts
             loadPosts();
           } catch (error) {
             console.error("Error deleting post:", error);
-            displayError(`Failed to delete post: ${error.message}`);
+            displayError(`Failed to delete post: ${error.message || "Unknown error"}`);
+            confirmationOverlay.remove();
           }
-        }
+        });
       };
-      postElement.appendChild(deleteButton);
+      adminButtonsContainer.appendChild(deleteButton);
+      
+      postElement.appendChild(adminButtonsContainer);
     }
 
     wrapper.appendChild(postElement);
