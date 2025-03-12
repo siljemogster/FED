@@ -115,7 +115,7 @@ function createCustomDropdown() {
   
   // Create selected option display
   const selectedOption = document.createElement('div');
-  selectedOption.className = 'selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between';  selectedOption.innerHTML = `
+  selectedOption.className = 'selected-option px-4 py-2 bg-white border rounded-lg cursor-pointer flex items-center justify-between h-11 text-sm';  selectedOption.innerHTML = `
     <span>${selectElement.options[selectElement.selectedIndex].text}</span>
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
       <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
@@ -181,42 +181,39 @@ function createCustomDropdown() {
   }
   
   styleElement.textContent = `
+  .custom-dropdown {
+    height: 3rem; /* 44px, equivalent to h-5 */
+  }
+
+
     .custom-dropdown .selected-option {
-      color: #4B5563;
-      transition: all 0.2s ease;
-      width: 100%; /* Ensure full width */
-      box-sizing: border-box;
-    }
+    color: #4B5563;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    height: 2.75rem; /* 44px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
     
-    .custom-dropdown .option {
-      transition: background-color 0.2s ease;
-      width: 100%; /* Ensure full width */
-      box-sizing: border-box;
+  .custom-dropdown .options-container {
+    width: 100%;
+    box-sizing: border-box;
+    top: 2.75rem; 
+    margin-top: 0.25rem;
+  }
+  
+  @media (max-width: 640px) {
+    .custom-dropdown .selected-option {
+      font-size: 1.125rem; 
+      height: 2.75rem;
+      padding: 0 1rem;
     }
-    
-    .custom-dropdown .options-container {
-      width: 100%; /* Ensure full width */
-      box-sizing: border-box;
-      
-    }
-    
-    @media (max-width: 640px) {
-      .custom-dropdown .option {
-        font-size: 18px;
-        padding: 16px;
-       
-      }
-      .custom-dropdown .selected-option {
-        font-size: 16px;
-        padding: 14px 16px;
-      
-      }
-      .options-container {
-        max-height: 300px;
-        overflow-y: auto;
-      }
-    }
-  `;
+  }
+`;
   document.head.appendChild(styleElement);
 }
 

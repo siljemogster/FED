@@ -25,6 +25,15 @@
     />
     <link rel="manifest" href="/favicons/site.webmanifest" />
     <style>
+
+body {
+      font-family: "Inter", sans-serif;
+      background-color: #f9fafb;
+      color: #1f2937;
+    }
+
+
+
       /* Global styles */
       .hidden {
         display: none !important;
@@ -132,7 +141,7 @@
     <header>
       <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between h-16">
+          <div class="flex justify-between h-16 items-center">
             <div class="flex-shrink-0 flex items-center">
               <a
                 href="/"
@@ -144,16 +153,18 @@
             <div class="hidden sm:flex sm:items-center sm:space-x-8">
               <a
                 href="/profile"
-                class="text-gray-700 hover:text-purple-700 px-3 py-2 text-sm font-medium transition-colors"
+                class="text-gray-700 hover:text-purple-700 text-base font-medium"
               >
                 Profile
               </a>
-              <a href="/feed" class="text-purple-700 text-sm font-medium">
+              <a 
+                href="/feed"
+                class=" text-purple-700 px-3 py-2 text-base font-medium transition-colors"
+              >
                 Feed
               </a>
               <button
-                href="/"
-                class="text-gray-700 hover:text-purple-700 px-3 py-2 text-sm font-medium transition-colors"
+                class="text-gray-700 hover:text-purple-700 px-3 py-2 text-base font-medium transition-colors"
               >
                 Sign Out
               </button>
@@ -183,23 +194,23 @@
             </button>
           </div>
         </div>
-        <div class="hidden" id="mobile-menu">
-          <div class="pt-2 pb-3 space-y-1">
+        <div class="hidden sm:hidden" id="mobile-menu">
+          <div class="pt-4 pb-6 space-y-6">
             <a
               href="/profile"
-              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
+              class="text-gray-700 hover:bg-gray-50 block px-3 py-2 text-base text-center font-medium transition-colors"
             >
               Profile
             </a>
             <a
               href="/feed"
-              class="text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
+              class="hover:text-purple-700 hover:bg-gray-50 block px-3 py-2 text-base text-center text-purple-700 bg-purple-50 font-medium transition-colors"
             >
               Feed
             </a>
             <button
               href="/"
-              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block px-6 py-2 text-base font-medium transition-colors"
+              class="text-gray-700 hover:text-purple-700 hover:bg-gray-50 block w-full px-3 py-2 text-base text-center font-medium transition-colors"
             >
               Sign Out
             </button>
