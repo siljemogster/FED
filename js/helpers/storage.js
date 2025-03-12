@@ -1,5 +1,3 @@
-
-
 const TOKEN = "accessToken";
 const USERNAME = "username";
 
