@@ -45,14 +45,14 @@ export async function editPostHandler() {
   formCard.className = "bg-white p-6 rounded-lg shadow-sm";
   editContainer.appendChild(formCard);
 
-  // Create header with post info
+  // Create header with post info - Fixed SVG path
   const header = document.createElement("div");
   header.className = "flex items-center gap-3 mb-6";
   header.innerHTML = `
     <div class="flex-shrink-0">
       <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4a0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </div>
     </div>
