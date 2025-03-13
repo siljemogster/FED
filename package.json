@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tailwindcss -i ./css/input.css -o ./css/output.css --watch", 
+    "dev": "npx tailwindcss -i ./css/input.css -o ./css/output.css --watch",
     "build": "npx tailwindcss -i ./css/input.css -o ./css/output.css --minify"
-
   },
   "repository": {
     "type": "git",
@@ -20,6 +19,9 @@
   },
   "homepage": "https://github.com/siljemogster/FED#readme",
   "devDependencies": {
-    "tailwindcss": "^3.4.15"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.4.17"
   }
 }
