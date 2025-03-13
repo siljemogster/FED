@@ -7,6 +7,7 @@ Stay in the Loop
 
 [Live link](https://stay-in-the-loop.netlify.app/)
 
+[Trello Board](https://trello.com/invite/b/6786daf2e268636b20bf9092/ATTIa5a2fba2a6b3e06b51e97fa3f8148bc954448603/js2-ca)
 
 ## Description 
 
