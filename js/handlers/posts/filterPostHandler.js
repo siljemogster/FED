@@ -17,6 +17,12 @@ import { generatePosts } from "./feedHandler.js";
  */
 export default function filterPostHandler(posts, container) {
   const filterInput = document.querySelector("#name-filter");
+  
+  // Check if filter input element exists before adding event listener
+  if (!filterInput) {
+    console.log("Filter input element (#name-filter) not found on this page");
+    return; // Exit function early if element doesn't exist
+  }
 
   filterInput.addEventListener("input", function (event) {
     const filterValue = event.target.value.toLowerCase();
